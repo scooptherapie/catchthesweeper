@@ -1418,7 +1418,7 @@
               <div class="scoop two"></div>
               <div class="cone"></div>
             </div>
-            <h1>Scoop Heist</h1>
+            <h1>Catch The Sweeper</h1>
             <p class="tagline">A sweet little shop with a not-so-sweet problem.</p>
             <p class="muted">
               Malam ini Scooptherapie kelihatan tenang, tapi dapurnya mulai kacau.
@@ -1874,7 +1874,8 @@
       moveIntervalId: null,
       clickTime: null,
       lastResult: null,
-      scores: []
+      scores: [],
+      roundResults: []
     };
 
     const staffAvatars = {
@@ -1892,6 +1893,16 @@
       missed: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/3555bded7e5cb3e5ac2d851e7d9bbe61758a3c77/missed.jpg",
       completed: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/3555bded7e5cb3e5ac2d851e7d9bbe61758a3c77/perfect.jpg"
     };
+
+    const RESULT_POINTS = {
+      perfect: 200,
+      early: 100,
+      late: 100,
+      fake: 50,
+      missed: 50
+    };
+
+    const RESULT_PRIORITY = ["perfect", "early", "late", "fake", "missed"];
 
     const chatScript = [
       { sender: "Caramel", avatar: staffAvatars.caramel, text: "Guys... staff room darurat. Ada yang masuk dapur lagi semalam." },
@@ -2047,7 +2058,8 @@
         introDone: state.introDone,
         currentRound: state.currentRound,
         lastResult: state.lastResult,
-        scores: state.scores
+        scores: state.scores,
+        roundResults: state.roundResults
       };
 
       try {
@@ -2072,6 +2084,7 @@
         state.currentRound = Math.min(Number(saved.currentRound || 0), rounds.length);
         state.lastResult = saved.lastResult || null;
         state.scores = Array.isArray(saved.scores) ? saved.scores : [];
+        state.roundResults = Array.isArray(saved.roundResults) ? saved.roundResults : [];
 
         applyProfile();
         updateRoundBadges();
@@ -2127,7 +2140,8 @@
         moveIntervalId: null,
         clickTime: null,
         lastResult: null,
-        scores: []
+        scores: [],
+        roundResults: []
       };
 
       // Pakai replace supaya setelah reset benar-benar balik ke opening story, bukan restore lobby.
@@ -2441,8 +2455,69 @@
         return;
       }
 
-      const { canvas, ctx, w, h } = await drawBaseCard("SCOOP HEIST RESULT", result.roundTitle || "Live Mission");
+      const titleText = result.isFinal ? "SCOOP HEIST FINAL RESULT" : "SCOOP HEIST RESULT";
+      const subtitleText = result.isFinal ? "Ending Summary" : (result.roundTitle || "Live Mission");
+      const { canvas, ctx, w, h } = await drawBaseCard(titleText, subtitleText);
       const resultImg = await loadCanvasImage(result.image || result.icon || resultImages[result.type] || resultImages.missed);
+
+      if (result.isFinal) {
+        ctx.fillStyle = "rgba(255,255,255,.84)";
+        roundedRect(ctx, 160, 250, 760, 470, 64);
+        ctx.fill();
+
+        if (resultImg) {
+          ctx.save();
+          roundedRect(ctx, 185, 275, 710, 420, 52);
+          ctx.clip();
+          drawCoverImage(ctx, resultImg, 185, 275, 710, 420);
+          ctx.restore();
+        }
+
+        ctx.fillStyle = "#ea5d8f";
+        ctx.font = "72px Boogaloo, Fredoka, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(result.title || "Final Result", w / 2, 800);
+
+        ctx.fillStyle = "#9f6b4d";
+        ctx.font = "700 32px Fredoka, sans-serif";
+        ctx.fillText(`Chef ${state.username || "Scooper"}`, w / 2, 848);
+
+        ctx.fillStyle = "rgba(139,218,195,.42)";
+        roundedRect(ctx, 240, 880, 600, 72, 34);
+        ctx.fill();
+        ctx.fillStyle = "#5babe0";
+        ctx.font = "700 34px Fredoka, sans-serif";
+        ctx.fillText(`Total Score: ${result.totalScore || 0} pts`, w / 2, 926);
+
+        ctx.fillStyle = "rgba(255,255,255,.82)";
+        roundedRect(ctx, 120, 975, w - 240, 150, 34);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(234,93,143,.30)";
+        ctx.lineWidth = 5;
+        roundedRect(ctx, 120, 975, w - 240, 150, 34);
+        ctx.stroke();
+
+        ctx.fillStyle = "#9f6b4d";
+        ctx.font = "700 24px Fredoka, sans-serif";
+        ctx.fillText(`Perfect: ${result.counts.perfect} (${result.counts.perfect * RESULT_POINTS.perfect} pts) • Early: ${result.counts.early} (${result.counts.early * RESULT_POINTS.early} pts)`, w / 2, 1036);
+        ctx.fillText(`Late: ${result.counts.late} (${result.counts.late * RESULT_POINTS.late} pts) • Fake: ${result.counts.fake} (${result.counts.fake * RESULT_POINTS.fake} pts)`, w / 2, 1076);
+        ctx.fillText(`Missed: ${result.counts.missed} (${result.counts.missed * RESULT_POINTS.missed} pts) • Perfect Success: ${result.counts.perfect}/${rounds.length}`, w / 2, 1116);
+
+        ctx.fillStyle = "rgba(255,252,229,.86)";
+        roundedRect(ctx, 120, 1160, w - 240, 128, 34);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(234,93,143,.30)";
+        ctx.lineWidth = 5;
+        roundedRect(ctx, 120, 1160, w - 240, 128, 34);
+        ctx.stroke();
+
+        ctx.fillStyle = "#ea5d8f";
+        ctx.font = "700 28px Kalam, Fredoka, sans-serif";
+        wrapCanvasText(ctx, result.meme || "Ending summary ready!", w / 2, 1210, 800, 34, 3);
+
+        triggerCanvasDownload(canvas, `scoop-heist-final-result-${safeFileName(state.username)}.png`);
+        return;
+      }
 
       ctx.fillStyle = "rgba(255,255,255,.84)";
       roundedRect(ctx, 190, 265, 700, 700, 70);
@@ -2472,10 +2547,10 @@
 
       ctx.font = "700 25px Fredoka, sans-serif";
       const meta = result.type === "perfect"
-        ? `Target ${result.target.toFixed(2)}s • Click ${result.clickTime.toFixed(2)}s • Diff ${result.difference.toFixed(2)}s`
+        ? `Target ${result.target.toFixed(2)}s • Click ${result.clickTime.toFixed(2)}s • Diff ${result.difference.toFixed(2)}s • Score ${result.points || 0}`
         : result.type === "missed"
-          ? `Target ${result.target.toFixed(2)}s • The thief escaped`
-          : `Target ${result.target.toFixed(2)}s • Click ${result.clickTime.toFixed(2)}s`;
+          ? `Target ${result.target.toFixed(2)}s • The thief escaped • Score ${result.points || 0}`
+          : `Target ${result.target.toFixed(2)}s • Click ${result.clickTime.toFixed(2)}s • Score ${result.points || 0}`;
       ctx.fillText(meta, w / 2, 1150);
 
       ctx.fillStyle = "rgba(255,252,229,.86)";
@@ -2526,6 +2601,91 @@
       return String(name || "chef").toLowerCase().replace(/[^a-z0-9-_]+/g, "-").replace(/^-+|-+$/g, "") || "chef";
     }
 
+    function getRoundPoints(type) {
+      return RESULT_POINTS[type] || 0;
+    }
+
+    function getDominantResultType(counts) {
+      return [...RESULT_PRIORITY].sort((a, b) => {
+        const countDiff = (counts[b] || 0) - (counts[a] || 0);
+        if (countDiff !== 0) return countDiff;
+
+        const pointDiff = (RESULT_POINTS[b] || 0) - (RESULT_POINTS[a] || 0);
+        if (pointDiff !== 0) return pointDiff;
+
+        return RESULT_PRIORITY.indexOf(a) - RESULT_PRIORITY.indexOf(b);
+      })[0] || "missed";
+    }
+
+    function buildFinalResult() {
+      const counts = { perfect: 0, early: 0, late: 0, fake: 0, missed: 0 };
+      const entries = Array.isArray(state.roundResults) ? state.roundResults : [];
+
+      entries.forEach(entry => {
+        if (counts[entry.type] !== undefined) counts[entry.type] += 1;
+      });
+
+      const totalScore = entries.reduce((sum, entry) => sum + (Number(entry.points) || getRoundPoints(entry.type)), 0);
+      const dominantType = getDominantResultType(counts);
+      const perfectSuccess = counts.perfect || 0;
+
+      let title = "Mixed Ending";
+      let message = `Chef ${state.username || "Scooper"} berhasil menyelesaikan semua ronde penjagaan.`;
+      let subMessage = `Total score kamu ${totalScore} point dengan ${perfectSuccess} perfect catch dari ${rounds.length} ronde.`;
+      let meme = "Shift malam selesai, tapi ending-nya tergantung performa kamu di tiap ronde 🍦";
+
+      if (dominantType === "perfect") {
+        title = totalScore >= 1000 ? "Sweet Victory!" : "Good Ending!";
+        message = `Chef ${state.username || "Scooper"} paling sering mendapat PERFECT dan berhasil menjaga Scooptherapie dengan baik.`;
+        subMessage = `Perfect paling banyak (${counts.perfect} kali). Total score kamu ${totalScore} point.`;
+        meme = "Malingnya kapok balik lagi. Freezer aman, topping selamat, dan toko bisa tutup dengan tenang 🍦✨";
+      }
+
+      if (dominantType === "early") {
+        title = "Too Fast Ending!";
+        message = `Chef ${state.username || "Scooper"} penuh semangat, tapi terlalu sering bergerak lebih cepat dari timing yang pas.`;
+        subMessage = `Early paling banyak (${counts.early} kali). Total score kamu ${totalScore} point.`;
+        meme = "Refleksmu cepat, tapi malingnya sering belum siap ditangkap. Semangatmu keburu lari duluan 😭";
+      }
+
+      if (dominantType === "late") {
+        title = "Too Late Ending!";
+        message = `Chef ${state.username || "Scooper"} sebenarnya sudah mengincar malingnya, tapi timingnya paling sering terlambat sedikit.`;
+        subMessage = `Late paling banyak (${counts.late} kali). Total score kamu ${totalScore} point.`;
+        meme = "Tinggal sedikit lagi... tapi malingnya keburu kabur sambil bawa sprinkle 💨";
+      }
+
+      if (dominantType === "fake") {
+        title = "Wrong Catch Ending!";
+        message = `Chef ${state.username || "Scooper"} terlalu sering salah tangkap dan bikin staff ikut panik.`;
+        subMessage = `Fake paling banyak (${counts.fake} kali). Total score kamu ${totalScore} point.`;
+        meme = "Caramel, Ruby, Matcha, dan Mico selamat... tapi mereka capek karena ikut ketangkep terus 😭";
+      }
+
+      if (dominantType === "missed") {
+        title = "Escape Ending!";
+        message = `Chef ${state.username || "Scooper"} terlalu sering membiarkan maling lolos dari pandangan.`;
+        subMessage = `Missed paling banyak (${counts.missed} kali). Total score kamu ${totalScore} point.`;
+        meme = "Toko belum benar-benar aman malam ini. Jejak sprinkle masih berceceran di mana-mana 🍨💨";
+      }
+
+      return {
+        isFinal: true,
+        type: dominantType,
+        icon: resultImages[dominantType] || resultImages.missed,
+        image: resultImages[dominantType] || resultImages.missed,
+        title,
+        message,
+        subMessage,
+        meme,
+        roundTitle: "Final Ending",
+        totalScore,
+        counts,
+        perfectSuccess,
+        summaryLine: `Perfect ${counts.perfect} • Early ${counts.early} • Late ${counts.late} • Fake ${counts.fake} • Missed ${counts.missed}`
+      };
+    }
+
     function getMemeText(type) {
       const memes = {
         perfect: "PERFECT! Malingnya belum sempat bilang 'eh'. Chef mode: ON.",
@@ -2538,17 +2698,26 @@
     }
 
     function updateResultPreview(result) {
+      if (result.isFinal) {
+        resultCardLabel.textContent = "🏁 FINAL RESULT";
+        resultCardName.textContent = `Chef ${state.username || "Scooper"}`;
+        resultCardStatus.textContent = `${result.title} • ${result.totalScore || 0} pts`;
+        resultCardMeta.innerHTML = `Perfect: ${result.counts.perfect} • Early: ${result.counts.early} • Late: ${result.counts.late}<br>Fake: ${result.counts.fake} • Missed: ${result.counts.missed} • Perfect Success: ${result.perfectSuccess}/${rounds.length}`;
+        memeBox.textContent = result.meme;
+        return;
+      }
+
       resultCardLabel.textContent = result.type === "perfect" ? "🏆 PERFECT CATCH" : "🍦 MISSION RESULT";
       resultCardName.textContent = `Chef ${state.username || "Scooper"}`;
-      resultCardStatus.textContent = result.title;
+      resultCardStatus.textContent = `${result.title} • ${result.points || 0} pts`;
 
-      let meta = result.roundTitle;
+      let meta = `${result.roundTitle}<br>Score: ${result.points || 0} pts`;
       if (result.type === "perfect") {
-        meta += `<br>Target: ${result.target.toFixed(2)}s • Click: ${result.clickTime.toFixed(2)}s • Diff: ${result.difference.toFixed(2)}s`;
+        meta += ` • Target: ${result.target.toFixed(2)}s • Click: ${result.clickTime.toFixed(2)}s • Diff: ${result.difference.toFixed(2)}s`;
       } else if (result.type === "missed") {
-        meta += `<br>Target: ${result.target.toFixed(2)}s • Thief escaped`;
+        meta += ` • Target: ${result.target.toFixed(2)}s • Thief escaped`;
       } else {
-        meta += `<br>Target: ${result.target.toFixed(2)}s • Click: ${result.clickTime.toFixed(2)}s`;
+        meta += ` • Target: ${result.target.toFixed(2)}s • Click: ${result.clickTime.toFixed(2)}s`;
       }
       resultCardMeta.innerHTML = meta;
       memeBox.textContent = result.meme;
@@ -2730,12 +2899,13 @@
       let title = "Round Finished";
       let message = "";
       let subMessage = "";
+      const points = getRoundPoints(type);
 
       if (type === "perfect") {
         icon = resultImages.perfect;
         title = "Perfect Catch!";
         message = `Chef ${state.username} caught the thief at ${clickTime.toFixed(2)}s!`;
-        subMessage = `Selisih kamu cuma ${difference.toFixed(2)}s dari target ${round.target.toFixed(2)}s. Badge unlocked: ${round.badge}.`;
+        subMessage = `Selisih kamu cuma ${difference.toFixed(2)}s dari target ${round.target.toFixed(2)}s. Badge unlocked: ${round.badge}. Kamu dapat ${points} point.`;
         const score = {
           name: state.username,
           round: round.title,
@@ -2754,7 +2924,7 @@
         icon = resultImages.early;
         title = "Too Early!";
         message = `Kamu klik di ${clickTime.toFixed(2)}s. Malingnya belum lengah!`;
-        subMessage = `Targetnya ${round.target.toFixed(2)}s. Bedanya ${difference.toFixed(2)}s. Tunggu momen yang lebih pas ya.`;
+        subMessage = `Targetnya ${round.target.toFixed(2)}s. Bedanya ${difference.toFixed(2)}s. Kamu tetap dapat ${points} point.`;
         addFeed(`Chef ${state.username} clicked too early at ${clickTime.toFixed(2)}s.`);
       }
 
@@ -2762,7 +2932,7 @@
         icon = resultImages.late;
         title = "Too Late!";
         message = `Kamu klik di ${clickTime.toFixed(2)}s. Malingnya sudah kabur!`;
-        subMessage = `Targetnya ${round.target.toFixed(2)}s. Bedanya ${difference.toFixed(2)}s.`;
+        subMessage = `Targetnya ${round.target.toFixed(2)}s. Bedanya ${difference.toFixed(2)}s. Kamu tetap dapat ${points} point.`;
         addFeed(`Chef ${state.username} clicked too late at ${clickTime.toFixed(2)}s.`);
       }
 
@@ -2770,7 +2940,7 @@
         icon = resultImages.fake;
         title = "Wrong Catch!";
         message = "Eyy, itu bukan malingnya!";
-        subMessage = "Kamu malah menangkap staff yang lagi panik bawa topping. Hati-hati di ronde berikutnya.";
+        subMessage = `Kamu malah menangkap staff yang lagi panik bawa topping. Kamu dapat ${points} point.`;
         addFeed(`Chef ${state.username} caught the wrong character.`);
       }
 
@@ -2778,11 +2948,22 @@
         icon = resultImages.missed;
         title = "The Thief Escaped!";
         message = "Kamu nggak klik sampai waktunya habis.";
-        subMessage = `Malingnya kabur dari toko. Target tadi ada di ${round.target.toFixed(2)}s.`;
+        subMessage = `Malingnya kabur dari toko. Target tadi ada di ${round.target.toFixed(2)}s. Kamu dapat ${points} point.`;
         addFeed(`The thief escaped in ${round.title}.`);
       }
 
       const meme = getMemeText(type);
+      state.roundResults.push({
+        roundIndex: state.currentRound + 1,
+        roundTitle: round.title,
+        type,
+        points,
+        target: round.target,
+        clickTime,
+        difference,
+        created_at: new Date().toISOString()
+      });
+
       state.lastResult = {
         type,
         icon,
@@ -2795,9 +2976,11 @@
         target: round.target,
         tolerance: round.tolerance,
         clickTime,
-        difference
+        difference,
+        points
       };
 
+      nextRoundBtn.classList.remove("hidden");
       resultIcon.innerHTML = `<img src="${icon}" alt="${escapeHtml(title)}" class="result-photo">`;
       resultTitle.textContent = title;
       resultMessage.textContent = message;
@@ -2822,12 +3005,17 @@
 
     function nextMission() {
       if (state.currentRound >= rounds.length) {
-        resultTitle.textContent = "Scoop Heist Completed!";
-        resultIcon.innerHTML = `<img src="${resultImages.completed}" alt="Scoop Heist Completed" class="result-photo">`;
-        resultMessage.textContent = "The shop is safe for tonight!";
-        resultSubMessage.textContent = "Semua shift penjagaan sudah selesai. Certified Scoop Defender unlocked!";
+        const finalResult = buildFinalResult();
+        state.lastResult = finalResult;
+
+        resultTitle.textContent = "Scoop Heist Final Result";
+        resultIcon.innerHTML = `<img src="${finalResult.image}" alt="${escapeHtml(finalResult.title)}" class="result-photo">`;
+        resultMessage.textContent = finalResult.message;
+        resultSubMessage.textContent = `${finalResult.subMessage} Total score: ${finalResult.totalScore} point.`;
+        updateResultPreview(finalResult);
         nextRoundBtn.classList.add("hidden");
         saveState();
+        showScreen("result");
         return;
       }
 
