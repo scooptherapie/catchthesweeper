@@ -1,0 +1,2924 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scoop Heist: Catch The Sweeper</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Chewy&family=Fredoka:wght@400;500;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --pink-1: #fff6fb;
+      --pink-2: #ffd9e8;
+      --pink-3: #f8b7cf;
+      --rose: #ea5d8f;
+      --rose-dark: #d84a7d;
+      --blue: #5babe0;
+      --blue-dark: #4592c5;
+      --mint: #8bdac3;
+      --mint-dark: #63bba4;
+      --cream: #fffce5;
+      --brown: #9f6b4d;
+      --choco: #8a5a44;
+      --white: #ffffff;
+      --shadow: 0 18px 40px rgba(185, 74, 118, 0.22);
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Fredoka", sans-serif;
+      color: var(--brown);
+      overflow-x: hidden;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,.95) 0 7%, transparent 18%),
+        radial-gradient(circle at 88% 24%, rgba(255,255,255,.9) 0 7%, transparent 18%),
+        radial-gradient(circle at 16% 78%, rgba(255,255,255,.85) 0 8%, transparent 20%),
+        radial-gradient(circle at 82% 72%, rgba(255,255,255,.78) 0 8%, transparent 20%),
+        linear-gradient(135deg, #ffffff 0%, #ffd9e8 25%, #f8b7cf 52%, #ffdceb 78%, #ffffff 100%);
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 520px;
+      height: 190px;
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(18px);
+      opacity: .55;
+      background:
+        radial-gradient(ellipse at 20% 55%, rgba(255,255,255,.9) 0 26%, transparent 56%),
+        radial-gradient(ellipse at 48% 45%, rgba(255,255,255,.82) 0 24%, transparent 58%),
+        radial-gradient(ellipse at 74% 58%, rgba(255,255,255,.88) 0 25%, transparent 56%);
+    }
+
+    body::before {
+      top: 13%;
+      left: -9%;
+    }
+
+    body::after {
+      right: -8%;
+      bottom: 11%;
+    }
+
+    .sprinkles {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: .42;
+      background-image:
+        radial-gradient(circle, #ff7aa8 0 2px, transparent 2.5px),
+        radial-gradient(circle, #6ac4ff 0 2px, transparent 2.5px),
+        radial-gradient(circle, #ffe26f 0 2px, transparent 2.5px),
+        radial-gradient(circle, #8bdac3 0 2px, transparent 2.5px);
+      background-size: 90px 90px, 120px 120px, 110px 110px, 140px 140px;
+      background-position: 10px 20px, 50px 80px, 30px 150px, 100px 40px;
+    }
+
+    .app {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .screen {
+      width: min(1040px, 100%);
+      display: none;
+      animation: popIn .45s ease both;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(14px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      border: 3px solid rgba(255,255,255,.78);
+      border-radius: 34px;
+      padding: 26px;
+      background: rgba(255,255,255,.58);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      right: -60px;
+      top: -70px;
+      background: rgba(255, 255, 255, .48);
+      pointer-events: none;
+    }
+
+    .hero {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .logo-scoop {
+      width: 132px;
+      height: 132px;
+      margin: 0 auto 10px;
+      position: relative;
+      animation: floaty 3s ease-in-out infinite;
+    }
+
+    @keyframes floaty {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-9px) rotate(2deg); }
+    }
+
+    .scoop {
+      position: absolute;
+      border-radius: 50% 50% 46% 46%;
+      box-shadow: inset -8px -10px rgba(255,255,255,.25);
+    }
+
+    .scoop.one {
+      width: 70px;
+      height: 62px;
+      left: 30px;
+      top: 4px;
+      background: linear-gradient(135deg, #ff8db3, #ff5f92);
+    }
+
+    .scoop.two {
+      width: 78px;
+      height: 66px;
+      left: 25px;
+      top: 42px;
+      background: linear-gradient(135deg, #9cf0d0, #60d6a7);
+    }
+
+    .cone {
+      position: absolute;
+      width: 78px;
+      height: 76px;
+      left: 26px;
+      bottom: 2px;
+      clip-path: polygon(50% 100%, 0 0, 100% 0);
+      background:
+        repeating-linear-gradient(45deg, rgba(133,78,36,.24) 0 4px, transparent 4px 12px),
+        repeating-linear-gradient(-45deg, rgba(133,78,36,.18) 0 4px, transparent 4px 12px),
+        linear-gradient(135deg, #f0b66a, #d9913d);
+      border-radius: 0 0 12px 12px;
+    }
+
+    h1 {
+      font-family: "Boogaloo", cursive;
+      font-size: clamp(42px, 8vw, 82px);
+      line-height: .9;
+      color: var(--blue);
+      text-shadow:
+        2px 2px 0 var(--blue-dark),
+        -2px 2px 0 var(--blue-dark),
+        2px -2px 0 var(--blue-dark),
+        -2px -2px 0 var(--blue-dark),
+        0 8px 0 rgba(255,255,255,.65);
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      font-family: "Chewy", cursive;
+      font-size: clamp(28px, 5vw, 48px);
+      color: var(--rose);
+      margin-bottom: 10px;
+    }
+
+    .tagline {
+      font-family: "Kalam", cursive;
+      font-weight: 700;
+      font-size: clamp(18px, 3vw, 25px);
+      color: var(--brown);
+      margin-bottom: 20px;
+    }
+
+    .muted {
+      color: rgba(121, 75, 56, .78);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 24px;
+      cursor: pointer;
+      font-family: "Chewy", cursive;
+      font-size: 22px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--rose), #ff8db3);
+      box-shadow: 0 8px 0 var(--rose-dark), 0 15px 24px rgba(216, 74, 125, .22);
+      transition: .18s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 11px 0 var(--rose-dark), 0 19px 28px rgba(216, 74, 125, .24);
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 4px 0 var(--rose-dark);
+    }
+
+    .btn.secondary {
+      background: linear-gradient(135deg, var(--mint), #b5f1de);
+      box-shadow: 0 8px 0 var(--mint-dark), 0 15px 24px rgba(99, 187, 164, .22);
+    }
+
+    .btn.small {
+      padding: 10px 18px;
+      font-size: 18px;
+    }
+
+    .input {
+      width: 100%;
+      border: 3px solid rgba(255,255,255,.9);
+      border-radius: 22px;
+      padding: 15px 16px;
+      margin: 12px 0;
+      font-family: "Fredoka", sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--brown);
+      outline: none;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 8px 0 rgba(255,255,255,.35);
+    }
+
+    .input:focus {
+      border-color: var(--rose);
+    }
+
+    /* OPENING STORY */
+    .opening-scene {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      align-items: center;
+      text-align: left;
+    }
+
+    .shop-illustration {
+      min-height: 390px;
+      border-radius: 30px;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid rgba(255,255,255,.85);
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,.75), rgba(255,248,220,.7)),
+        linear-gradient(135deg, #ffeaf3, #fffce5);
+      box-shadow: inset 0 -14px 0 rgba(255,255,255,.35);
+    }
+
+    .moon {
+      position: absolute;
+      right: 32px;
+      top: 28px;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #fffad1;
+      box-shadow: 0 0 30px rgba(255,250,209,.85);
+    }
+
+    .store-window {
+      position: absolute;
+      left: 11%;
+      right: 11%;
+      top: 82px;
+      height: 170px;
+      border-radius: 28px 28px 18px 18px;
+      border: 5px solid rgba(159,107,77,.24);
+      background:
+        linear-gradient(90deg, transparent 48%, rgba(255,255,255,.55) 49% 51%, transparent 52%),
+        linear-gradient(180deg, transparent 48%, rgba(255,255,255,.55) 49% 51%, transparent 52%),
+        linear-gradient(135deg, #bdecff, #75c7ef);
+    }
+
+    .store-counter {
+      position: absolute;
+      left: 10%;
+      right: 10%;
+      bottom: 38px;
+      height: 105px;
+      border-radius: 30px 30px 18px 18px;
+      background: linear-gradient(135deg, #eeb777, #d9913d);
+      border: 4px solid rgba(255,255,255,.8);
+      box-shadow: 0 14px 0 rgba(159,107,77,.16);
+    }
+
+    .warning-sticker {
+      position: absolute;
+      left: 23px;
+      bottom: 172px;
+      transform: rotate(-7deg);
+      border-radius: 18px;
+      padding: 10px 14px;
+      font-family: "Chewy", cursive;
+      font-size: 20px;
+      color: var(--rose);
+      background: rgba(255,255,255,.85);
+      border: 3px dashed var(--rose);
+    }
+
+    .story-text {
+      position: relative;
+      z-index: 2;
+    }
+
+    .story-text p {
+      margin: 12px 0;
+    }
+
+    .phone-call {
+      margin-top: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .phone-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: #5bd48a;
+      box-shadow: 0 0 0 7px rgba(91,212,138,.20);
+      animation: pulse 1.3s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(.75); opacity: .5; }
+    }
+
+    /* CHAT STORY */
+    .chat-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .phone-notice {
+      margin-bottom: 14px;
+      padding: 14px 16px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.78);
+      border: 3px solid rgba(255,255,255,.85);
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: noticePop .35s ease both;
+    }
+
+    @keyframes noticePop {
+      from { opacity: 0; transform: translateY(-12px) scale(.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .notice-icon {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #ff8db3, #8bdac3);
+      color: #fff;
+      font-size: 23px;
+      flex: 0 0 auto;
+    }
+
+    .chat-card {
+      min-height: 620px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 14px;
+      border-bottom: 3px solid rgba(255,255,255,.55);
+      margin-bottom: 14px;
+    }
+
+    .group-avatar {
+      width: 54px;
+      height: 54px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      background: linear-gradient(135deg, #fffce5, #ffd9e8);
+      border: 3px solid rgba(255,255,255,.85);
+      box-shadow: 0 8px 0 rgba(255,255,255,.35);
+    }
+
+    .chat-title {
+      font-family: "Chewy", cursive;
+      color: var(--rose);
+      font-size: 27px;
+      line-height: 1;
+    }
+
+    .chat-sub {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(121,75,56,.72);
+    }
+
+    .messages {
+      position: relative;
+      z-index: 2;
+      overflow-y: auto;
+      padding: 2px 4px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 450px;
+    }
+
+    .bubble-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 9px;
+      animation: bubbleIn .25s ease both;
+    }
+
+    @keyframes bubbleIn {
+      from { opacity: 0; transform: translateY(8px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .bubble-row.user {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      font-size: 19px;
+      background: rgba(255,255,255,.75);
+      border: 2px solid rgba(255,255,255,.8);
+      flex: 0 0 auto;
+    }
+
+    .avatar img,
+    .group-avatar img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .group-avatar.staff-stack {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 2px;
+      overflow: hidden;
+      padding: 2px;
+    }
+
+    .group-avatar.staff-stack img {
+      border-radius: 10px;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .bubble {
+      max-width: min(560px, 78%);
+      border-radius: 23px 23px 23px 8px;
+      padding: 11px 14px;
+      background: rgba(255,255,255,.78);
+      border: 2px solid rgba(255,255,255,.78);
+      box-shadow: 0 9px 18px rgba(185, 74, 118, .12);
+      line-height: 1.45;
+      font-weight: 650;
+    }
+
+    .bubble-row.user .bubble {
+      border-radius: 23px 23px 8px 23px;
+      background: linear-gradient(135deg, #fffce5, #fff);
+    }
+
+    .sender {
+      display: block;
+      font-family: "Chewy", cursive;
+      font-size: 18px;
+      color: var(--rose);
+      margin-bottom: 2px;
+    }
+
+    .typing {
+      width: fit-content;
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,.78);
+      border: 2px solid rgba(255,255,255,.78);
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+      margin-left: 47px;
+    }
+
+    .typing span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--rose);
+      animation: typing 1s infinite ease-in-out;
+    }
+
+    .typing span:nth-child(2) { animation-delay: .15s; }
+    .typing span:nth-child(3) { animation-delay: .3s; }
+
+    @keyframes typing {
+      0%, 80%, 100% { transform: translateY(0); opacity: .45; }
+      40% { transform: translateY(-5px); opacity: 1; }
+    }
+
+    .staff-form {
+      position: relative;
+      z-index: 2;
+      display: none;
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 26px;
+      background: rgba(255,255,255,.58);
+      border: 3px solid rgba(255,255,255,.75);
+      animation: popIn .25s ease both;
+    }
+
+    .staff-form.show {
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .photo-box {
+      width: 108px;
+      height: 108px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.74);
+      border: 3px dashed rgba(234,93,143,.55);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: rgba(121,75,56,.65);
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .photo-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .skip-photo {
+      font-size: 13px;
+      font-weight: 800;
+      color: rgba(121,75,56,.65);
+    }
+
+    /* LOBBY + GAME */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: 9px 14px;
+      background: rgba(255,255,255,.68);
+      border: 2px solid rgba(255,255,255,.8);
+      font-weight: 800;
+      color: var(--brown);
+    }
+
+    .profile-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      max-width: 100%;
+    }
+
+    .profile-mini {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(255,255,255,.8);
+      border: 2px solid rgba(255,255,255,.9);
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+    }
+
+    .profile-mini img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.5fr .9fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .round-list {
+      display: grid;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .round-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 13px 14px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.68);
+      border: 2px solid rgba(255,255,255,.75);
+      font-weight: 800;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      color: #fff;
+      background: var(--rose);
+      white-space: nowrap;
+    }
+
+    .badge.locked { background: #c59d89; }
+    .badge.live { background: var(--mint-dark); }
+    .badge.done { background: var(--blue-dark); }
+
+    .shop {
+      min-height: 500px;
+      position: relative;
+      border-radius: 30px;
+      overflow: hidden;
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,.78), rgba(255,248,220,.68)),
+        linear-gradient(135deg, #ffeaf3, #fffce5);
+      border: 3px solid rgba(255,255,255,.85);
+      box-shadow: inset 0 -14px 0 rgba(255,255,255,.35);
+    }
+
+    .awning {
+      height: 76px;
+      display: flex;
+      border-bottom: 4px solid rgba(159,107,77,.12);
+    }
+
+    .awning span {
+      flex: 1;
+      background: #ff8db3;
+      border-radius: 0 0 20px 20px;
+      border-right: 3px solid rgba(255,255,255,.75);
+    }
+
+    .awning span:nth-child(even) { background: #fff; }
+
+    .counter {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: 28px;
+      height: 96px;
+      border-radius: 28px 28px 18px 18px;
+      background: linear-gradient(135deg, #eeb777, #d9913d);
+      border: 4px solid rgba(255,255,255,.8);
+      box-shadow: 0 14px 0 rgba(159,107,77,.16);
+    }
+
+    .freezer {
+      position: absolute;
+      width: 210px;
+      height: 130px;
+      left: 9%;
+      bottom: 122px;
+      border-radius: 26px;
+      background: linear-gradient(135deg, #bdecff, #75c7ef);
+      border: 4px solid rgba(255,255,255,.85);
+      box-shadow: 0 10px 0 rgba(69,146,197,.18);
+    }
+
+    .freezer::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      top: 22px;
+      width: 72px;
+      height: 44px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.68);
+    }
+
+    .shelf {
+      position: absolute;
+      right: 9%;
+      bottom: 136px;
+      width: 220px;
+      height: 152px;
+      border-radius: 24px;
+      border: 4px solid rgba(255,255,255,.8);
+      background: rgba(255,255,255,.45);
+    }
+
+    .shelf::before,
+    .shelf::after {
+      content: "";
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(159,107,77,.18);
+    }
+
+    .shelf::before { top: 48px; }
+    .shelf::after { top: 96px; }
+
+    .jar {
+      position: absolute;
+      width: 34px;
+      height: 42px;
+      border-radius: 12px 12px 8px 8px;
+      background: linear-gradient(to bottom, #fff, #ffd85c);
+      border: 3px solid rgba(159,107,77,.14);
+    }
+
+    .jar.a { right: 163px; bottom: 230px; }
+    .jar.b { right: 116px; bottom: 182px; background: linear-gradient(to bottom, #fff, #ff8db3); }
+    .jar.c { right: 64px; bottom: 230px; background: linear-gradient(to bottom, #fff, #8bdac3); }
+
+    .status-box {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 94px;
+      text-align: center;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .timer {
+      font-family: "Boogaloo", cursive;
+      font-size: clamp(58px, 10vw, 96px);
+      color: var(--rose);
+      text-shadow: 3px 3px 0 #fff, 0 8px 0 rgba(255,255,255,.4);
+      line-height: 1;
+    }
+
+    .target-text {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.78);
+      border: 2px solid rgba(255,255,255,.9);
+      font-weight: 900;
+    }
+
+    .catch-window {
+      width: min(380px, 82%);
+      height: 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.76);
+      border: 2px solid rgba(255,255,255,.85);
+      margin: 14px auto 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .catch-zone {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      background: rgba(139,218,195,.9);
+      border-left: 3px solid var(--mint-dark);
+      border-right: 3px solid var(--mint-dark);
+    }
+
+    .progress-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      border-radius: 999px;
+      background: var(--rose);
+      left: 0%;
+      box-shadow: 0 0 0 5px rgba(234,93,143,.18);
+    }
+
+    .character {
+      position: absolute;
+      width: 88px;
+      height: 104px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      cursor: pointer;
+      z-index: 4;
+      filter: drop-shadow(0 12px 12px rgba(87, 48, 44, .22));
+      animation: wiggle .55s ease-in-out infinite;
+      display: none;
+      transition: left .34s ease, top .34s ease, transform .16s ease;
+    }
+
+    .character.show { display: block; }
+
+    .character.move {
+      animation: wiggle .38s ease-in-out infinite, runAround .9s ease-in-out infinite;
+    }
+
+    .character.dash {
+      transform: translate(-50%, -50%) scale(1.13);
+    }
+
+    @keyframes wiggle {
+      0%, 100% { rotate: -4deg; }
+      50% { rotate: 4deg; }
+    }
+
+    @keyframes runAround {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-40%, -58%) scale(1.03); }
+    }
+
+    .hood {
+      position: absolute;
+      width: 78px;
+      height: 72px;
+      left: 5px;
+      top: 0;
+      border-radius: 45% 45% 35% 35%;
+      background: linear-gradient(135deg, #8a5a44, #5b3529);
+    }
+
+    .face {
+      position: absolute;
+      width: 52px;
+      height: 42px;
+      left: 18px;
+      top: 28px;
+      border-radius: 42% 42% 50% 50%;
+      background: #ffd6b1;
+    }
+
+    .eye {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      top: 44px;
+      background: #4c2f28;
+    }
+
+    .eye.left { left: 31px; }
+    .eye.right { right: 31px; }
+
+    .body-thief {
+      position: absolute;
+      width: 70px;
+      height: 54px;
+      left: 9px;
+      bottom: 0;
+      border-radius: 24px 24px 18px 18px;
+      background: linear-gradient(135deg, #5b3529, #8a5a44);
+    }
+
+    .sprinkle-bag {
+      position: absolute;
+      width: 34px;
+      height: 39px;
+      right: -7px;
+      bottom: 14px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #fffce5, #ffd85c);
+      border: 3px solid #fff;
+    }
+
+    .character.fake .hood { background: linear-gradient(135deg, #ff8db3, #d84a7d); }
+    .character.fake .body-thief { background: linear-gradient(135deg, #8bdac3, #5babe0); }
+    .character.fake .sprinkle-bag { background: linear-gradient(135deg, #fff, #ffb6d0); }
+
+    .panel {
+      display: grid;
+      gap: 14px;
+    }
+
+    .mini-card {
+      border-radius: 26px;
+      padding: 16px;
+      background: rgba(255,255,255,.62);
+      border: 3px solid rgba(255,255,255,.75);
+      box-shadow: 0 12px 26px rgba(185, 74, 118, .14);
+    }
+
+    .mini-title {
+      font-family: "Chewy", cursive;
+      color: var(--blue);
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .feed {
+      list-style: none;
+      display: grid;
+      gap: 8px;
+      max-height: 180px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .feed li {
+      font-size: 14px;
+      line-height: 1.35;
+      padding: 9px 10px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.68);
+    }
+
+    .leaderboard {
+      display: grid;
+      gap: 8px;
+    }
+
+    .rank {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.68);
+      font-weight: 800;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(20px);
+      width: min(560px, calc(100% - 32px));
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20;
+      padding: 14px 18px;
+      border-radius: 22px;
+      text-align: center;
+      font-weight: 900;
+      color: var(--brown);
+      background: rgba(255,255,255,.92);
+      border: 3px solid rgba(255,255,255,.9);
+      box-shadow: var(--shadow);
+      transition: .22s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .result-big {
+      text-align: center;
+      padding: 26px 10px;
+    }
+
+    .result-icon {
+      font-size: 74px;
+      margin: 12px 0;
+      animation: bounce 1.2s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      background: rgba(255, 217, 232, .82);
+      backdrop-filter: blur(12px);
+      animation: popIn .22s ease both;
+    }
+
+    .modal-card {
+      width: min(560px, 100%);
+      max-height: 92vh;
+      overflow-y: auto;
+      text-align: center;
+    }
+
+    .modal-card::before {
+      pointer-events: none;
+    }
+
+
+    /* FIXED ID CARD PREVIEW - foto tidak melebar lagi */
+    .id-card-preview {
+      width: min(340px, 92vw);
+      margin: 16px auto 18px;
+      padding: 18px 16px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(255,255,255,.95) 0 12%, transparent 28%),
+        radial-gradient(circle at 88% 16%, rgba(255,255,255,.7) 0 10%, transparent 25%),
+        linear-gradient(145deg, #fff8fc 0%, #ffd9e8 58%, #fffce5 100%);
+      border: 4px solid rgba(255,255,255,.95);
+      box-shadow: 0 14px 32px rgba(185, 74, 118, .18);
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .card-label {
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto 12px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.74);
+      border: 2px solid rgba(255,255,255,.86);
+      color: var(--brown);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .5px;
+    }
+
+    .id-photo-large {
+      width: 148px;
+      height: 148px;
+      margin: 0 auto 12px;
+      border-radius: 34px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.74);
+      border: 5px solid rgba(255,255,255,.96);
+      box-shadow: 0 10px 20px rgba(121,75,56,.14);
+      font-size: 64px;
+      line-height: 1;
+    }
+
+    .id-photo-large img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .id-name {
+      width: 100%;
+      max-width: 285px;
+      margin: 0 auto 5px;
+      color: var(--rose);
+      font-family: "Chewy", cursive;
+      font-size: 28px;
+      line-height: 1.05;
+      overflow-wrap: anywhere;
+    }
+
+    .id-role {
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto 10px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(139,218,195,.35);
+      color: var(--mint-dark);
+      border: 2px solid rgba(255,255,255,.8);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .id-meta {
+      width: min(285px, 100%);
+      margin: 0 auto;
+      padding: 11px 12px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.66);
+      color: rgba(121,75,56,.78);
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 700;
+      text-align: left;
+    }
+
+
+
+    /* Download canvas harus disembunyikan.
+       Canvas ini cuma dipakai untuk membuat PNG, bukan untuk tampil di lobby. */
+    .canvas-helper {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      visibility: hidden !important;
+      position: fixed !important;
+      left: -99999px !important;
+      top: -99999px !important;
+      pointer-events: none !important;
+    }
+
+
+
+    .online-list {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .online-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.70);
+      border: 2px solid rgba(255,255,255,.85);
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--brown);
+    }
+
+    .online-dot-small {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #5bd48a;
+      box-shadow: 0 0 0 4px rgba(91,212,138,.18);
+      flex: 0 0 auto;
+    }
+
+    .round-list.seven-rounds {
+      max-height: 330px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .download-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    #nextRoundBtn,
+    #downloadResultBtn {
+      padding: 9px 16px;
+      font-size: 17px;
+      box-shadow: 0 6px 0 var(--rose-dark), 0 12px 20px rgba(216, 74, 125, .20);
+    }
+
+    #downloadResultBtn {
+      box-shadow: 0 6px 0 var(--mint-dark), 0 12px 20px rgba(99, 187, 164, .20);
+    }
+
+    #nextRoundBtn:hover,
+    #downloadResultBtn:hover {
+      transform: translateY(-2px);
+    }
+
+    .rank small {
+      display: block;
+      font-weight: 700;
+      opacity: .72;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 860px) {
+      .app {
+        padding: 16px;
+        align-items: start;
+      }
+
+      .card {
+        border-radius: 28px;
+        padding: 20px;
+      }
+
+      .opening-scene,
+      .layout,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .shop-illustration {
+        min-height: 300px;
+      }
+
+      .chat-card {
+        min-height: 620px;
+      }
+
+      .messages {
+        max-height: 430px;
+      }
+
+      .bubble {
+        max-width: 84%;
+      }
+
+      .photo-box {
+        width: 100%;
+        height: 190px;
+      }
+
+      .shop {
+        min-height: 460px;
+      }
+
+      .freezer {
+        width: 170px;
+        height: 110px;
+        left: 6%;
+      }
+
+      .shelf {
+        width: 160px;
+        right: 6%;
+      }
+
+      .jar.a { right: 118px; }
+      .jar.b { right: 80px; }
+      .jar.c { right: 36px; }
+
+      .topbar {
+        justify-content: center;
+      }
+
+      .pill {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sprinkles"></div>
+
+  <main class="app">
+    <!-- OPENING STORY -->
+    <section id="openingScreen" class="screen active">
+      <div class="card">
+        <div class="opening-scene">
+          <div class="shop-illustration">
+            <div class="moon"></div>
+            <div class="store-window"></div>
+            <div class="warning-sticker">sprinkles missing!</div>
+            <div class="store-counter"></div>
+          </div>
+
+          <div class="story-text">
+            <div class="logo-scoop">
+              <div class="scoop one"></div>
+              <div class="scoop two"></div>
+              <div class="cone"></div>
+            </div>
+            <h1>Scoop Heist</h1>
+            <p class="tagline">A sweet little shop with a not-so-sweet problem.</p>
+            <p class="muted">
+              Malam ini Scooptherapie kelihatan tenang, tapi dapurnya mulai kacau.
+              Toples sprinkle sering bergeser sendiri, freezer kebuka tiba-tiba,
+              dan beberapa rasa spesial hilang sebelum toko tutup.
+            </p>
+            <p class="muted">
+              Staff room mulai ramai. Sepertinya para chef butuh bantuan seseorang
+              untuk ikut jaga toko malam ini.
+            </p>
+
+            <button id="checkPhoneBtn" class="btn phone-call">
+              <span class="phone-dot"></span>
+              Check Staff Phone
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CHAT STORY -->
+    <section id="chatScreen" class="screen">
+      <div class="chat-wrap">
+        <div id="phoneNotice" class="phone-notice hidden">
+          <div class="notice-icon">💬</div>
+          <div>
+            <b>Staff Room Message</b>
+            <p class="muted">Caramel, Ruby, Matcha, and Mico need your help.</p>
+          </div>
+        </div>
+
+        <div class="card chat-card">
+          <div class="chat-header">
+            <div class="group-avatar staff-stack">
+              <img src="https://raw.githubusercontent.com/scooptherapie/catchthesweeper/f6bdd1e52dd2b2fd241f3721cfb12f4d914534fe/caramel%20avatar.jpg" alt="Caramel">
+              <img src="https://raw.githubusercontent.com/scooptherapie/catchthesweeper/f6bdd1e52dd2b2fd241f3721cfb12f4d914534fe/ruby%20avatar.jpg" alt="Ruby">
+              <img src="https://raw.githubusercontent.com/scooptherapie/catchthesweeper/f6bdd1e52dd2b2fd241f3721cfb12f4d914534fe/matcha%20avatar.jpg" alt="Matcha">
+              <img src="https://raw.githubusercontent.com/scooptherapie/catchthesweeper/f6bdd1e52dd2b2fd241f3721cfb12f4d914534fe/mico%20avatar.jpg" alt="Mico">
+            </div>
+            <div>
+              <div class="chat-title">Scooptherapie Staff Room</div>
+              <div class="chat-sub">4 chefs online • emergency shift</div>
+            </div>
+          </div>
+
+          <div id="messages" class="messages"></div>
+
+          <div id="staffForm" class="staff-form">
+            <div class="form-grid">
+              <div>
+                <p class="muted"><b>Staff check-in</b></p>
+                <input id="usernameInput" class="input" type="text" placeholder="Nama kamu, contoh: Ruby" maxlength="18">
+
+                <label for="photoInput" class="skip-photo">
+                  Upload foto kamu untuk staff list. Boleh dilewati kalau mau pakai avatar default.
+                </label>
+                <input id="photoInput" class="file-input" type="file" accept="image/*">
+
+                <div class="form-actions">
+                  <button id="sendProfileBtn" class="btn small">Send Introduction</button>
+                  <button id="skipPhotoBtn" class="btn secondary small">Skip Photo</button>
+                </div>
+              </div>
+
+              <label for="photoInput" id="photoBox" class="photo-box">
+                <span>Tap to<br>add photo</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOBBY / CODE GATE -->
+    <section id="lobbyScreen" class="screen">
+      <div class="card">
+        <div class="topbar">
+          <div class="pill"><span class="phone-dot"></span> Live Event Lobby</div>
+          <div class="pill profile-pill">
+            <span id="profileMini" class="profile-mini">👩‍🍳</span>
+            <span>Chef: <span id="chefNameText">-</span></span>
+          </div>
+          <div class="pill">🍦 <span id="onlineCount">0</span> chefs online</div>
+        </div>
+        <div id="onlineList" class="online-list"></div>
+
+        <div class="hero">
+          <h2>Mission Code Required</h2>
+          <p class="tagline" id="roundGateTitle">Round 1: Kitchen Panic</p>
+          <p class="muted">
+            Masukkan kode dari Head Chef untuk membuka ronde. Pencurinya cepat,
+            jadi jangan asal klik. Perhatikan stopwatch dan tangkap di waktu yang paling pas.
+          </p>
+
+          <input id="codeInput" class="input" type="text" placeholder="Enter Mission Code...">
+          <button id="unlockBtn" class="btn">Unlock Round</button>
+
+          <div class="round-list seven-rounds">
+            <div class="round-item">
+              <span>Round 1: Kitchen Panic</span>
+              <span id="roundBadge1" class="badge locked">Locked</span>
+            </div>
+            <div class="round-item">
+              <span>Round 2: Freezer Chase</span>
+              <span id="roundBadge2" class="badge locked">Locked</span>
+            </div>
+            <div class="round-item">
+              <span>Round 3: Topping Trap</span>
+              <span id="roundBadge3" class="badge locked">Locked</span>
+            </div>
+            <div class="round-item">
+              <span>Round 4: Caramel Corridor</span>
+              <span id="roundBadge4" class="badge locked">Locked</span>
+            </div>
+            <div class="round-item">
+              <span>Round 5: Sprinkle Shadow</span>
+              <span id="roundBadge5" class="badge locked">Locked</span>
+            </div>
+            <div class="round-item">
+              <span>Round 6: Midnight Scoop</span>
+              <span id="roundBadge6" class="badge locked">Locked</span>
+            </div>
+            <div class="round-item">
+              <span>Final Round: Secret Recipe</span>
+              <span id="roundBadge7" class="badge locked">Locked</span>
+            </div>
+          </div>
+
+          <p class="muted">
+            Kode demo:
+            <b>rubycantik</b>,
+            <b>princessmico</b>,
+            <b>matchaindahbersamamu</b>,
+            <b>tuanputricaramel</b>,
+            <b>scoopersgemez</b>,
+            <b>imyoursweeties</b>,
+            <b>secretrecipe</b>
+          </p>
+
+          <button id="resetIntroBtn" class="btn secondary small">Reset From Beginning</button>
+          <p class="muted" style="margin-top:10px; font-size:13px;">Tombol ini satu-satunya yang mengulang story dari awal. Refresh atau buka ulang web tetap lanjut dari data tersimpan.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GAME -->
+    <section id="gameScreen" class="screen">
+      <div class="card">
+        <div class="topbar">
+          <div class="pill"><span class="phone-dot"></span> <span id="gameRoundText">Round 1 Live</span></div>
+          <div class="pill profile-pill">
+            <span id="gameProfileMini" class="profile-mini">👩‍🍳</span>
+            <span id="gameChefName">Chef</span>
+          </div>
+          <button id="backLobbyBtn" class="btn secondary small">Back to Lobby</button>
+        </div>
+
+        <div class="layout">
+          <div class="shop" id="shopArea">
+            <div class="awning">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+
+            <div class="status-box">
+              <div class="timer" id="timerText">00.00</div>
+              <div class="target-text" id="targetText">Catch at 07.00s!</div>
+              <div class="catch-window">
+                <div id="catchZone" class="catch-zone"></div>
+                <div id="progressLine" class="progress-line"></div>
+              </div>
+            </div>
+
+            <div class="freezer"></div>
+            <div class="shelf"></div>
+            <div class="jar a"></div>
+            <div class="jar b"></div>
+            <div class="jar c"></div>
+            <div class="counter"></div>
+
+            <div id="thief" class="character thief show" data-real="true" title="Catch the real thief!">
+              <div class="hood"></div>
+              <div class="face"></div>
+              <div class="eye left"></div>
+              <div class="eye right"></div>
+              <div class="body-thief"></div>
+              <div class="sprinkle-bag"></div>
+            </div>
+
+            <div id="fake1" class="character fake" data-real="false" title="Fake thief!">
+              <div class="hood"></div>
+              <div class="face"></div>
+              <div class="eye left"></div>
+              <div class="eye right"></div>
+              <div class="body-thief"></div>
+              <div class="sprinkle-bag"></div>
+            </div>
+
+            <div id="fake2" class="character fake" data-real="false" title="Fake thief!">
+              <div class="hood"></div>
+              <div class="face"></div>
+              <div class="eye left"></div>
+              <div class="eye right"></div>
+              <div class="body-thief"></div>
+              <div class="sprinkle-bag"></div>
+            </div>
+          </div>
+
+          <aside class="panel">
+            <div class="mini-card">
+              <div class="mini-title">Head Chef Announcement</div>
+              <p class="muted" id="announcementText">
+                Watch the clock. Catch only at the right time.
+              </p>
+            </div>
+
+            <div class="mini-card">
+              <div class="mini-title">Live Feed</div>
+              <ul id="liveFeed" class="feed"></ul>
+            </div>
+
+            <div class="mini-card">
+              <div class="mini-title">Closest Catches</div>
+              <div id="leaderboard" class="leaderboard"></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULT -->
+    <section id="resultScreen" class="screen">
+      <div class="card hero">
+        <h2 id="resultTitle">Round Result</h2>
+        <div class="result-big">
+          <div class="result-icon" id="resultIcon">🍦</div>
+          <p class="tagline" id="resultMessage">Perfect Catch!</p>
+          <p class="muted" id="resultSubMessage">Round selesai.</p>
+        </div>
+
+        <div id="resultCardPreview" class="result-card-preview">
+          <div class="card-label" id="resultCardLabel">🍦 ROUND RESULT</div>
+          <div class="result-name" id="resultCardName">Chef</div>
+          <div class="result-role" id="resultCardStatus">Mission Result</div>
+          <div class="result-meta" id="resultCardMeta">Scooptherapie Live Mission</div>
+        </div>
+
+        <div id="memeBox" class="meme-box">Jangan panik dulu, Chef. Es krim aja bisa meleleh, apalagi fokus kita.</div>
+
+        <div class="download-actions">
+          <button id="downloadResultBtn" class="btn secondary small">Download Result</button>
+          <button id="nextRoundBtn" class="btn small">Next Mission</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE ID CARD POPUP -->
+    <section id="profileModal" class="modal-overlay hidden" aria-hidden="true">
+      <div class="card modal-card">
+        <h2>Staff ID Card Ready!</h2>
+        <p class="muted">Profil penjaga toko kamu sudah dibuat. Download dulu ID Card-nya, lalu masuk ke lobby.</p>
+
+        <div id="idCardPreview" class="id-card-preview">
+          <div class="card-label">🍦 SCOOPTHERAPIE STAFF ID</div>
+          <div id="idPhotoLarge" class="id-photo-large">👩‍🍳</div>
+          <div id="idName" class="id-name">Chef</div>
+          <div class="id-role">Night Shift Scoop Guardian</div>
+          <div class="id-meta">
+            Access: Sprinkle Security Room<br>
+            Status: Ready to guard the shop<br>
+            Code: SCOOP-ID-001
+          </div>
+        </div>
+
+        <div class="download-actions">
+          <button id="downloadProfileBtn" class="btn secondary small">Download ID Card</button>
+          <button id="enterLobbyFromProfileBtn" class="btn small">Masuk Lobby</button>
+        </div>
+      </div>
+    </section>
+
+    <canvas id="downloadCanvas" class="canvas-helper" width="1080" height="1350"></canvas>
+
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const screens = {
+      opening: document.getElementById("openingScreen"),
+      chat: document.getElementById("chatScreen"),
+      lobby: document.getElementById("lobbyScreen"),
+      game: document.getElementById("gameScreen"),
+      result: document.getElementById("resultScreen")
+    };
+
+    const checkPhoneBtn = document.getElementById("checkPhoneBtn");
+    const phoneNotice = document.getElementById("phoneNotice");
+    const messages = document.getElementById("messages");
+    const staffForm = document.getElementById("staffForm");
+    const usernameInput = document.getElementById("usernameInput");
+    const photoInput = document.getElementById("photoInput");
+    const photoBox = document.getElementById("photoBox");
+    const sendProfileBtn = document.getElementById("sendProfileBtn");
+    const skipPhotoBtn = document.getElementById("skipPhotoBtn");
+
+    const chefNameText = document.getElementById("chefNameText");
+    const profileMini = document.getElementById("profileMini");
+    const gameProfileMini = document.getElementById("gameProfileMini");
+    const gameChefName = document.getElementById("gameChefName");
+    const codeInput = document.getElementById("codeInput");
+    const unlockBtn = document.getElementById("unlockBtn");
+    const roundGateTitle = document.getElementById("roundGateTitle");
+    const resetIntroBtn = document.getElementById("resetIntroBtn");
+
+    const gameRoundText = document.getElementById("gameRoundText");
+    const timerText = document.getElementById("timerText");
+    const targetText = document.getElementById("targetText");
+    const catchZone = document.getElementById("catchZone");
+    const progressLine = document.getElementById("progressLine");
+    const announcementText = document.getElementById("announcementText");
+    const shopArea = document.getElementById("shopArea");
+    const thief = document.getElementById("thief");
+    const fake1 = document.getElementById("fake1");
+    const fake2 = document.getElementById("fake2");
+    const liveFeed = document.getElementById("liveFeed");
+    const leaderboard = document.getElementById("leaderboard");
+    const onlineCount = document.getElementById("onlineCount");
+    const onlineList = document.getElementById("onlineList");
+    const backLobbyBtn = document.getElementById("backLobbyBtn");
+
+    const resultTitle = document.getElementById("resultTitle");
+    const resultIcon = document.getElementById("resultIcon");
+    const resultMessage = document.getElementById("resultMessage");
+    const resultSubMessage = document.getElementById("resultSubMessage");
+    const nextRoundBtn = document.getElementById("nextRoundBtn");
+    const downloadResultBtn = document.getElementById("downloadResultBtn");
+    const resultCardLabel = document.getElementById("resultCardLabel");
+    const resultCardName = document.getElementById("resultCardName");
+    const resultCardStatus = document.getElementById("resultCardStatus");
+    const resultCardMeta = document.getElementById("resultCardMeta");
+    const memeBox = document.getElementById("memeBox");
+    const profileModal = document.getElementById("profileModal");
+    const idPhotoLarge = document.getElementById("idPhotoLarge");
+    const idName = document.getElementById("idName");
+    const downloadProfileBtn = document.getElementById("downloadProfileBtn");
+    const enterLobbyFromProfileBtn = document.getElementById("enterLobbyFromProfileBtn");
+    const downloadCanvas = document.getElementById("downloadCanvas");
+    const toast = document.getElementById("toast");
+
+    const STORAGE_KEY = "scoopHeistPerfectCatchSave";
+    const PLAYER_ID_KEY = "scoopHeistPlayerId";
+    const GAME_SPEED = 1.15; // stopwatch dibuat sedikit lebih cepat supaya tidak terlalu mudah
+
+    const SUPABASE_URL = "https://juyykftlkrctlpldydrc.supabase.co/rest/v1";
+    const SUPABASE_KEY = "sb_publishable_D6INoGVPsgiPUQa0LYrfWQ_MESNOjWz";
+    const SUPABASE_HEADERS = {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation"
+    };
+
+    const rounds = [
+      {
+        title: "Round 1: Kitchen Panic",
+        code: "rubycantik",
+        badge: "Sprinkle Scout",
+        target: 4.20,
+        tolerance: 0.18,
+        maxTime: 5.80,
+        fakeCount: 0,
+        move: true,
+        moveEvery: 780
+      },
+      {
+        title: "Round 2: Freezer Chase",
+        code: "princessmico",
+        badge: "Freezer Runner",
+        target: 3.65,
+        tolerance: 0.16,
+        maxTime: 5.10,
+        fakeCount: 0,
+        move: true,
+        moveEvery: 650
+      },
+      {
+        title: "Round 3: Topping Trap",
+        code: "matchaindahbersamamu",
+        badge: "Topping Detective",
+        target: 5.25,
+        tolerance: 0.14,
+        maxTime: 6.55,
+        fakeCount: 1,
+        move: true,
+        moveEvery: 560
+      },
+      {
+        title: "Round 4: Caramel Corridor",
+        code: "tuanputricaramel",
+        badge: "Caramel Guard",
+        target: 2.95,
+        tolerance: 0.13,
+        maxTime: 4.35,
+        fakeCount: 1,
+        move: true,
+        moveEvery: 500
+      },
+      {
+        title: "Round 5: Sprinkle Shadow",
+        code: "scoopersgemez",
+        badge: "Sprinkle Shadow Catcher",
+        target: 4.80,
+        tolerance: 0.12,
+        maxTime: 5.90,
+        fakeCount: 2,
+        move: true,
+        moveEvery: 430
+      },
+      {
+        title: "Round 6: Midnight Scoop",
+        code: "imyoursweeties",
+        badge: "Midnight Scoop Defender",
+        target: 3.35,
+        tolerance: 0.11,
+        maxTime: 4.75,
+        fakeCount: 2,
+        move: true,
+        moveEvery: 380
+      },
+      {
+        title: "Final Round: Secret Recipe",
+        code: "secretrecipe",
+        badge: "Secret Recipe Guardian",
+        target: 2.70,
+        tolerance: 0.10,
+        maxTime: 4.00,
+        fakeCount: 2,
+        move: true,
+        moveEvery: 330
+      }
+    ];
+
+    let state = {
+      username: "",
+      photo: "",
+      playerId: getPlayerId(),
+      introDone: false,
+      currentRound: 0,
+      phase: "opening",
+      startTime: 0,
+      rafId: null,
+      timeoutId: null,
+      moveIntervalId: null,
+      clickTime: null,
+      lastResult: null,
+      scores: []
+    };
+
+    const staffAvatars = {
+      caramel: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/f6bdd1e52dd2b2fd241f3721cfb12f4d914534fe/caramel%20avatar.jpg",
+      mico: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/f6bdd1e52dd2b2fd241f3721cfb12f4d914534fe/mico%20avatar.jpg",
+      matcha: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/f6bdd1e52dd2b2fd241f3721cfb12f4d914534fe/matcha%20avatar.jpg",
+      ruby: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/f6bdd1e52dd2b2fd241f3721cfb12f4d914534fe/ruby%20avatar.jpg"
+    };
+
+    const chatScript = [
+      { sender: "Caramel", avatar: staffAvatars.caramel, text: "Guys... staff room darurat. Ada yang masuk dapur lagi semalam." },
+      { sender: "Ruby", avatar: staffAvatars.ruby, text: "Aku cek freezer pagi ini, toples sprinkle emasnya geser sendiri. Padahal toko sudah dikunci." },
+      { sender: "Matcha", avatar: staffAvatars.matcha, text: "Ini bukan pertama kali. Malingnya cepat banget, selalu kabur pas kita baru sadar." },
+      { sender: "Mico", avatar: staffAvatars.mico, text: "Kalau mau nangkep dia, kita nggak bisa asal sergap. Harus tunggu momen yang pas, pas dia lengah." },
+      { sender: "Caramel", avatar: staffAvatars.caramel, text: "Kamu yang lagi buka staff phone ini... bisa bantu jaga Scooptherapie malam ini?" },
+      { sender: "Ruby", avatar: staffAvatars.ruby, text: "Sebelum masuk shift, kirim nama dan foto kamu dulu ya. Biar kami masukin ke staff list penjaga toko." }
+    ];
+
+
+    function getPlayerId() {
+      let id = localStorage.getItem(PLAYER_ID_KEY);
+      if (!id) {
+        id = `player-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        localStorage.setItem(PLAYER_ID_KEY, id);
+      }
+      return id;
+    }
+
+    async function supabaseRequest(path, options = {}) {
+      try {
+        const response = await fetch(`${SUPABASE_URL}/${path}`, {
+          ...options,
+          headers: {
+            ...SUPABASE_HEADERS,
+            ...(options.headers || {})
+          }
+        });
+
+        if (!response.ok) {
+          console.warn("Supabase request failed:", response.status, await response.text());
+          return null;
+        }
+
+        if (response.status === 204) return [];
+        return await response.json();
+      } catch (error) {
+        console.warn("Supabase offline / belum siap:", error);
+        return null;
+      }
+    }
+
+    async function upsertOnlinePlayer() {
+      if (!state.username) return;
+
+      const payload = {
+        id: state.playerId,
+        username: state.username,
+        photo: state.photo || null,
+        current_round: Math.min(state.currentRound + 1, rounds.length),
+        last_seen: new Date().toISOString()
+      };
+
+      await supabaseRequest("scoop_online_players?on_conflict=id", {
+        method: "POST",
+        headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+        body: JSON.stringify(payload)
+      });
+    }
+
+    async function fetchOnlinePlayers() {
+      const cutoff = new Date(Date.now() - 1000 * 60 * 5).toISOString();
+      const data = await supabaseRequest(
+        `scoop_online_players?select=id,username,current_round,last_seen&last_seen=gte.${encodeURIComponent(cutoff)}&order=last_seen.desc&limit=30`,
+        { method: "GET" }
+      );
+
+      if (!Array.isArray(data)) return;
+
+      onlineCount.textContent = data.length;
+      onlineList.innerHTML = "";
+
+      if (!data.length) {
+        onlineList.innerHTML = `<span class="online-chip"><span class="online-dot-small"></span>Belum ada yang online</span>`;
+        return;
+      }
+
+      data.forEach(player => {
+        const chip = document.createElement("span");
+        chip.className = "online-chip";
+        chip.innerHTML = `<span class="online-dot-small"></span>${escapeHtml(player.username || "Chef")} <small>R${player.current_round || 1}</small>`;
+        onlineList.appendChild(chip);
+      });
+    }
+
+    async function submitScoreToSupabase(score) {
+      await supabaseRequest("scoop_scores", {
+        method: "POST",
+        body: JSON.stringify({
+          player_id: state.playerId,
+          username: score.name,
+          round_index: score.roundIndex,
+          round_title: score.round,
+          click_time: Number(score.time.toFixed(3)),
+          target_time: Number(score.target.toFixed(3)),
+          difference: Number(score.diff.toFixed(3)),
+          created_at: new Date().toISOString()
+        })
+      });
+    }
+
+    async function fetchLeaderboard() {
+      const data = await supabaseRequest(
+        "scoop_scores?select=username,round_index,round_title,click_time,target_time,difference,created_at&order=difference.asc&order=click_time.asc&limit=10",
+        { method: "GET" }
+      );
+
+      if (!Array.isArray(data)) return null;
+
+      return data.map(item => ({
+        name: item.username || "Chef",
+        round: item.round_title || `Round ${item.round_index || ""}`,
+        roundIndex: Number(item.round_index || 0),
+        time: Number(item.click_time || 0),
+        target: Number(item.target_time || 0),
+        diff: Number(item.difference || 0),
+        created_at: item.created_at || ""
+      }));
+    }
+
+    async function refreshSupabasePanels() {
+      await upsertOnlinePlayer();
+      await fetchOnlinePlayers();
+      await updateLeaderboard();
+    }
+
+    function startSupabaseHeartbeat() {
+      refreshSupabasePanels();
+      setInterval(refreshSupabasePanels, 8000);
+    }
+
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.remove("active"));
+      screens[name].classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, 2200);
+    }
+
+    function saveState() {
+      const save = {
+        username: state.username,
+        photo: state.photo,
+        playerId: state.playerId,
+        introDone: state.introDone,
+        currentRound: state.currentRound,
+        lastResult: state.lastResult,
+        scores: state.scores
+      };
+
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(save));
+      } catch (error) {
+        console.warn("Save failed:", error);
+      }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+
+        const saved = JSON.parse(raw);
+        if (!saved || !saved.introDone || !saved.username) return false;
+
+        state.username = saved.username || "";
+        state.photo = saved.photo || "";
+        state.playerId = saved.playerId || getPlayerId();
+        state.introDone = true;
+        state.currentRound = Math.min(Number(saved.currentRound || 0), rounds.length);
+        state.lastResult = saved.lastResult || null;
+        state.scores = Array.isArray(saved.scores) ? saved.scores : [];
+
+        applyProfile();
+        updateRoundBadges();
+        updateLeaderboard();
+        refreshSupabasePanels();
+        showScreen("lobby");
+        return true;
+      } catch (error) {
+        console.warn("Load failed:", error);
+        return false;
+      }
+    }
+
+    function resetSave() {
+      const confirmReset = confirm(
+        "Yakin mau ulang dari awal banget? Nama, foto, ID Card, result, leaderboard lokal, progress ronde, dan story chat akan dihapus."
+      );
+
+      if (!confirmReset) return;
+
+      // Penting: matikan auto-save dulu. Kalau tidak, beforeunload bisa menyimpan state lama lagi saat reload.
+      window.removeEventListener("beforeunload", saveState);
+
+      try {
+        const shouldDeleteKey = (key) => {
+          const lower = key.toLowerCase();
+          return lower.includes("scoop") || lower.includes("heist") || lower.includes("perfectcatch");
+        };
+
+        localStorage.removeItem(STORAGE_KEY);
+
+        Object.keys(localStorage).forEach((key) => {
+          if (shouldDeleteKey(key)) localStorage.removeItem(key);
+        });
+
+        Object.keys(sessionStorage).forEach((key) => {
+          if (shouldDeleteKey(key)) sessionStorage.removeItem(key);
+        });
+      } catch (error) {
+        console.warn("Reset failed:", error);
+      }
+
+      state = {
+        username: "",
+        photo: "",
+        playerId: getPlayerId(),
+        introDone: false,
+        currentRound: 0,
+        phase: "opening",
+        startTime: 0,
+        rafId: null,
+        timeoutId: null,
+        moveIntervalId: null,
+        clickTime: null,
+        lastResult: null,
+        scores: []
+      };
+
+      // Pakai replace supaya setelah reset benar-benar balik ke opening story, bukan restore lobby.
+      window.location.replace(window.location.pathname + window.location.search);
+    }
+
+    function applyProfile() {
+      chefNameText.textContent = state.username || "-";
+      gameChefName.textContent = state.username ? `Chef ${state.username}` : "Chef";
+
+      const profileHtml = state.photo
+        ? `<img src="${state.photo}" alt="Profile photo">`
+        : "👩‍🍳";
+
+      profileMini.innerHTML = profileHtml;
+      gameProfileMini.innerHTML = profileHtml;
+    }
+
+    function startChatStory() {
+      showScreen("chat");
+      phoneNotice.classList.remove("hidden");
+
+      setTimeout(() => {
+        runChatScript();
+      }, 900);
+    }
+
+    async function runChatScript() {
+      for (const message of chatScript) {
+        showTyping();
+        await wait(900 + Math.random() * 450);
+        removeTyping();
+        addBubble(message.sender, message.avatar, message.text);
+        await wait(450);
+      }
+
+      staffForm.classList.add("show");
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function showTyping() {
+      removeTyping();
+
+      const typing = document.createElement("div");
+      typing.className = "typing";
+      typing.id = "typingBubble";
+      typing.innerHTML = `<span></span><span></span><span></span>`;
+      messages.appendChild(typing);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function removeTyping() {
+      const typing = document.getElementById("typingBubble");
+      if (typing) typing.remove();
+    }
+
+    function getAvatarHtml(avatar, altText = "avatar") {
+      const value = String(avatar || "");
+      const isImage = value.startsWith("http") || value.startsWith("data:image") || value.startsWith("blob:");
+
+      if (!isImage) return value || "🍦";
+      return `<img src="${value}" alt="${escapeHtml(altText)} avatar" loading="lazy" referrerpolicy="no-referrer">`;
+    }
+
+    function addBubble(sender, avatar, text, isUser = false, image = "") {
+      const row = document.createElement("div");
+      row.className = `bubble-row ${isUser ? "user" : ""}`;
+
+      const imgHtml = image ? `<div style="margin-top:8px;"><img src="${image}" alt="photo" style="width:120px;height:120px;object-fit:cover;border-radius:22px;border:3px solid rgba(255,255,255,.85);"></div>` : "";
+      const avatarHtml = isUser
+        ? (state.photo ? getAvatarHtml(state.photo, "You") : "👩‍🍳")
+        : getAvatarHtml(avatar, sender);
+
+      if (isUser) {
+        row.innerHTML = `
+          <div class="bubble">
+            <span class="sender">You</span>
+            ${text}
+            ${imgHtml}
+          </div>
+          <div class="avatar">${avatarHtml}</div>
+        `;
+      } else {
+        row.innerHTML = `
+          <div class="avatar">${avatarHtml}</div>
+          <div class="bubble">
+            <span class="sender">${sender}</span>
+            ${text}
+          </div>
+        `;
+      }
+
+      messages.appendChild(row);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    async function submitProfile(usePhoto = true) {
+      const name = usernameInput.value.trim();
+
+      if (!name) {
+        showToast("Isi nama chef kamu dulu ya!");
+        return;
+      }
+
+      state.username = name;
+      if (!usePhoto) state.photo = "";
+      upsertOnlinePlayer();
+
+      addBubble("You", "👩‍🍳", `Halo teman-teman, saya <b>${escapeHtml(name)}</b> mau membantu kalian menjaga toko ini.`, true, usePhoto ? state.photo : "");
+
+      staffForm.classList.remove("show");
+
+      await wait(700);
+      showTyping();
+      await wait(1000);
+      removeTyping();
+      addBubble("Caramel", staffAvatars.caramel, `Halo, ${escapeHtml(name)}! Makasih sudah mau bantu jagain toko malam ini.`);
+
+      await wait(500);
+      showTyping();
+      await wait(1100);
+      removeTyping();
+      addBubble("Ruby", staffAvatars.ruby, "Mulai sekarang kamu ikut jaga Scooptherapie ya. Kalau malingnya muncul, jangan asal klik. Tunggu waktu yang paling pas.");
+
+      await wait(500);
+      showTyping();
+      await wait(950);
+      removeTyping();
+      addBubble("Mico", staffAvatars.mico, "Siap-siap. Dia cepat banget. Kalau kamu terlalu cepat atau terlalu lambat, dia bakal kabur.");
+
+      await wait(700);
+      showTyping();
+      await wait(800);
+      removeTyping();
+
+      const enterRow = document.createElement("div");
+      enterRow.className = "bubble-row";
+      enterRow.innerHTML = `
+        <div class="avatar">${getAvatarHtml(staffAvatars.matcha, "Matcha")}</div>
+        <div class="bubble">
+          <span class="sender">Matcha</span>
+          Staff check-in selesai. ID Card kamu sudah siap. Lihat dulu sebelum masuk lobby ya!
+          <div style="margin-top:12px;">
+            <button id="enterLobbyBtn" class="btn small">Lihat ID Card</button>
+          </div>
+        </div>
+      `;
+      messages.appendChild(enterRow);
+      messages.scrollTop = messages.scrollHeight;
+
+      document.getElementById("enterLobbyBtn").addEventListener("click", () => {
+        applyProfile();
+        showProfileModal();
+      });
+    }
+
+    function showProfileModal() {
+      applyProfile();
+      idName.textContent = `Chef ${state.username || "Scooper"}`;
+      idPhotoLarge.innerHTML = state.photo
+        ? `<img src="${state.photo}" alt="Profile photo">`
+        : "👩‍🍳";
+      profileModal.classList.remove("hidden");
+      profileModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeProfileModalToLobby() {
+      profileModal.classList.add("hidden");
+      profileModal.setAttribute("aria-hidden", "true");
+      state.introDone = true;
+      applyProfile();
+      updateRoundBadges();
+      updateLeaderboard();
+      saveState();
+      refreshSupabasePanels();
+      showScreen("lobby");
+    }
+
+    function getPhotoImage() {
+      return new Promise(resolve => {
+        if (!state.photo) return resolve(null);
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = state.photo;
+      });
+    }
+
+    function roundedRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
+      const words = String(text).split(" ");
+      let line = "";
+      let lines = [];
+
+      for (const word of words) {
+        const test = line ? `${line} ${word}` : word;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = word;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      lines = lines.slice(0, maxLines);
+      lines.forEach((ln, i) => ctx.fillText(ln, x, y + i * lineHeight));
+    }
+
+    async function drawBaseCard(title, subtitle) {
+      const canvas = downloadCanvas;
+      const ctx = canvas.getContext("2d");
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+
+      const bg = ctx.createLinearGradient(0, 0, w, h);
+      bg.addColorStop(0, "#fff8fc");
+      bg.addColorStop(.45, "#ffd9e8");
+      bg.addColorStop(1, "#fffce5");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.fillStyle = "rgba(255,255,255,.55)";
+      ctx.beginPath(); ctx.arc(170, 150, 120, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(930, 1160, 170, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(900, 180, 90, 0, Math.PI * 2); ctx.fill();
+
+      ctx.strokeStyle = "rgba(234, 93, 143, .28)";
+      ctx.lineWidth = 8;
+      ctx.setLineDash([22, 18]);
+      roundedRect(ctx, 55, 55, w - 110, h - 110, 70);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = "rgba(255,255,255,.78)";
+      roundedRect(ctx, 170, 92, w - 340, 92, 46);
+      ctx.fill();
+
+      ctx.fillStyle = "#ea5d8f";
+      ctx.font = "700 38px Fredoka, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(title, w / 2, 151);
+
+      ctx.fillStyle = "#9f6b4d";
+      ctx.font = "700 28px Fredoka, sans-serif";
+      ctx.fillText(subtitle, w / 2, 210);
+      return { canvas, ctx, w, h };
+    }
+
+    async function downloadProfileCard() {
+      const { canvas, ctx, w } = await drawBaseCard("🍦 SCOOPTHERAPIE STAFF ID", "Night Shift Scoop Guardian");
+      const photo = await getPhotoImage();
+
+      ctx.fillStyle = "rgba(255,255,255,.82)";
+      roundedRect(ctx, 340, 295, 400, 400, 90);
+      ctx.fill();
+
+      if (photo) {
+        ctx.save();
+        roundedRect(ctx, 360, 315, 360, 360, 78);
+        ctx.clip();
+        const ratio = Math.max(360 / photo.width, 360 / photo.height);
+        const iw = photo.width * ratio;
+        const ih = photo.height * ratio;
+        ctx.drawImage(photo, 360 + (360 - iw) / 2, 315 + (360 - ih) / 2, iw, ih);
+        ctx.restore();
+      } else {
+        ctx.font = "170px serif";
+        ctx.textAlign = "center";
+        ctx.fillText("👩‍🍳", w / 2, 560);
+      }
+
+      ctx.fillStyle = "#5babe0";
+      ctx.font = "86px Boogaloo, Fredoka, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`Chef ${state.username || "Scooper"}`, w / 2, 805);
+
+      ctx.fillStyle = "rgba(139,218,195,.55)";
+      roundedRect(ctx, 250, 850, 580, 80, 40);
+      ctx.fill();
+      ctx.fillStyle = "#9f6b4d";
+      ctx.font = "700 34px Fredoka, sans-serif";
+      ctx.fillText("OFFICIAL SCOOP GUARDIAN", w / 2, 902);
+
+      ctx.font = "700 30px Fredoka, sans-serif";
+      ctx.fillText("Access: Sprinkle Security Room", w / 2, 1008);
+      ctx.fillText("Status: Ready to guard the shop", w / 2, 1060);
+      ctx.fillText("Code: SCOOP-ID-001", w / 2, 1112);
+
+      ctx.fillStyle = "#ea5d8f";
+      ctx.font = "700 30px Fredoka, sans-serif";
+      ctx.fillText("Save this ID before entering the lobby!", w / 2, 1230);
+
+      triggerCanvasDownload(canvas, `scooptherapie-id-card-${safeFileName(state.username)}.png`);
+    }
+
+    async function downloadResultCard() {
+      const result = state.lastResult;
+      if (!result) {
+        showToast("Belum ada result yang bisa di-download.");
+        return;
+      }
+
+      const { canvas, ctx, w } = await drawBaseCard("🍦 SCOOP HEIST RESULT", result.roundTitle || "Live Mission");
+      const isWin = result.type === "perfect";
+      const icon = isWin ? "🏆" : result.type === "fake" ? "🫠" : result.type === "early" ? "😵" : result.type === "late" ? "💨" : "🍨";
+
+      ctx.font = "150px serif";
+      ctx.textAlign = "center";
+      ctx.fillText(icon, w / 2, 430);
+
+      ctx.fillStyle = isWin ? "#5babe0" : "#ea5d8f";
+      ctx.font = "78px Boogaloo, Fredoka, sans-serif";
+      ctx.fillText(result.title || "Round Result", w / 2, 555);
+
+      ctx.fillStyle = "#9f6b4d";
+      ctx.font = "700 44px Fredoka, sans-serif";
+      ctx.fillText(`Chef ${state.username || "Scooper"}`, w / 2, 650);
+
+      ctx.fillStyle = "rgba(255,255,255,.72)";
+      roundedRect(ctx, 120, 715, w - 240, 250, 54);
+      ctx.fill();
+
+      ctx.fillStyle = "#9f6b4d";
+      ctx.font = "700 34px Fredoka, sans-serif";
+      wrapCanvasText(ctx, result.message || "Mission completed.", w / 2, 790, 760, 44, 3);
+
+      ctx.font = "700 28px Fredoka, sans-serif";
+      const meta = result.type === "perfect"
+        ? `Target ${result.target.toFixed(2)}s • Click ${result.clickTime.toFixed(2)}s • Diff ${result.difference.toFixed(2)}s`
+        : result.type === "missed"
+          ? `Target ${result.target.toFixed(2)}s • The thief escaped`
+          : `Target ${result.target.toFixed(2)}s • Click ${result.clickTime.toFixed(2)}s`;
+      ctx.fillText(meta, w / 2, 1045);
+
+      ctx.fillStyle = "#ea5d8f";
+      ctx.font = "700 34px Kalam, Fredoka, sans-serif";
+      wrapCanvasText(ctx, result.meme || "Scoop happens. Try again next mission!", w / 2, 1130, 820, 45, 3);
+
+      triggerCanvasDownload(canvas, `scoop-heist-result-${safeFileName(state.username)}.png`);
+    }
+
+    function triggerCanvasDownload(canvas, filename) {
+      const link = document.createElement("a");
+      link.download = filename;
+      link.href = canvas.toDataURL("image/png");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    }
+
+    function safeFileName(name) {
+      return String(name || "chef").toLowerCase().replace(/[^a-z0-9-_]+/g, "-").replace(/^-+|-+$/g, "") || "chef";
+    }
+
+    function getMemeText(type) {
+      const memes = {
+        perfect: "PERFECT! Malingnya belum sempat bilang 'eh'. Chef mode: ON.",
+        early: "Chef terlalu semangat. Malingnya bahkan belum loading 😭",
+        late: "Malingnya udah checkout duluan, Chef. Tinggal jejak sprinkle doang 💨",
+        fake: "SALAH ORANG 😭 itu staff yang lagi bawa topping, bukan tersangka.",
+        missed: "Kamu blink sekali, malingnya langsung speedrun keluar toko 🍨💨"
+      };
+      return memes[type] || "Scoop happens. Try again next mission!";
+    }
+
+    function updateResultPreview(result) {
+      resultCardLabel.textContent = result.type === "perfect" ? "🏆 PERFECT CATCH" : "🍦 MISSION RESULT";
+      resultCardName.textContent = `Chef ${state.username || "Scooper"}`;
+      resultCardStatus.textContent = result.title;
+
+      let meta = result.roundTitle;
+      if (result.type === "perfect") {
+        meta += `<br>Target: ${result.target.toFixed(2)}s • Click: ${result.clickTime.toFixed(2)}s • Diff: ${result.difference.toFixed(2)}s`;
+      } else if (result.type === "missed") {
+        meta += `<br>Target: ${result.target.toFixed(2)}s • Thief escaped`;
+      } else {
+        meta += `<br>Target: ${result.target.toFixed(2)}s • Click: ${result.clickTime.toFixed(2)}s`;
+      }
+      resultCardMeta.innerHTML = meta;
+      memeBox.textContent = result.meme;
+    }
+
+    function wait(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function handlePhotoUpload(file) {
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        showToast("File harus gambar ya!");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = event => {
+        state.photo = event.target.result;
+        photoBox.innerHTML = `<img src="${state.photo}" alt="Preview photo">`;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function unlockRound() {
+      const round = rounds[state.currentRound];
+
+      if (!round) {
+        showToast("Semua ronde selesai. Toko aman!");
+        return;
+      }
+
+      const code = codeInput.value.trim().toLowerCase();
+
+      if (code !== round.code.toLowerCase()) {
+        showToast("Eyy, itu bukan kode dari Head Chef. Coba cek lagi ya!");
+        return;
+      }
+
+      codeInput.value = "";
+      document.getElementById(`roundBadge${state.currentRound + 1}`).textContent = "Live Now";
+      document.getElementById(`roundBadge${state.currentRound + 1}`).className = "badge live";
+
+      addFeed(`Mission Code accepted for ${round.title}.`);
+      startRound();
+    }
+
+    function startRound() {
+      const round = rounds[state.currentRound];
+
+      clearRoundTimers();
+
+      state.phase = "active";
+      state.startTime = performance.now();
+      state.clickTime = null;
+
+      gameRoundText.textContent = `${round.title} Live`;
+      targetText.textContent = `Catch at ${round.target.toFixed(2)}s!`;
+      announcementText.textContent = `Tangkap malingnya tepat di sekitar ${round.target.toFixed(2)} detik. Toleransi: ±${round.tolerance.toFixed(2)}s.`;
+
+      setupCatchWindow(round);
+      setupCharacters(round);
+      startCharacterMovement(round);
+
+      showScreen("game");
+      addFeed(`${round.title} started. Watch the stopwatch!`);
+
+      tickStopwatch();
+
+      state.timeoutId = setTimeout(() => {
+        if (state.phase === "active") {
+          finishRound("missed", null, round.maxTime);
+        }
+      }, (round.maxTime / GAME_SPEED) * 1000);
+    }
+
+    function setupCatchWindow(round) {
+      const startPercent = Math.max(0, ((round.target - round.tolerance) / round.maxTime) * 100);
+      const endPercent = Math.min(100, ((round.target + round.tolerance) / round.maxTime) * 100);
+
+      catchZone.style.left = `${startPercent}%`;
+      catchZone.style.width = `${endPercent - startPercent}%`;
+      progressLine.style.left = "0%";
+      timerText.textContent = "00.00";
+    }
+
+    function setupCharacters(round) {
+      [thief, fake1, fake2].forEach(char => {
+        char.classList.remove("show", "move");
+      });
+
+      thief.classList.add("show");
+      if (round.move) thief.classList.add("move");
+
+      randomizeCharacter(thief);
+
+      if (round.fakeCount >= 1) {
+        fake1.classList.add("show");
+        if (round.move) fake1.classList.add("move");
+        randomizeCharacter(fake1);
+      }
+
+      if (round.fakeCount >= 2) {
+        fake2.classList.add("show");
+        if (round.move) fake2.classList.add("move");
+        randomizeCharacter(fake2);
+      }
+    }
+
+    function tickStopwatch() {
+      if (state.phase !== "active") return;
+
+      const round = rounds[state.currentRound];
+      const elapsed = ((performance.now() - state.startTime) / 1000) * GAME_SPEED;
+      const progress = Math.min(100, (elapsed / round.maxTime) * 100);
+
+      timerText.textContent = elapsed.toFixed(2).padStart(5, "0");
+      progressLine.style.left = `${progress}%`;
+
+      if (elapsed > round.target + round.tolerance) {
+        targetText.textContent = "Too late zone!";
+      } else if (elapsed >= round.target - round.tolerance) {
+        targetText.textContent = "CATCH WINDOW!";
+      } else {
+        targetText.textContent = `Catch at ${round.target.toFixed(2)}s!`;
+      }
+
+      state.rafId = requestAnimationFrame(tickStopwatch);
+    }
+
+    function handleCharacterClick(event) {
+      event.stopPropagation();
+
+      const character = event.currentTarget;
+      const isReal = character.dataset.real === "true";
+      const round = rounds[state.currentRound];
+      const elapsed = ((performance.now() - state.startTime) / 1000) * GAME_SPEED;
+
+      if (state.phase !== "active") {
+        showToast("Ronde belum aktif, Chef!");
+        return;
+      }
+
+      if (!isReal) {
+        finishRound("fake", null, elapsed);
+        return;
+      }
+
+      const difference = Math.abs(elapsed - round.target);
+
+      if (difference <= round.tolerance) {
+        finishRound("perfect", difference, elapsed);
+      } else if (elapsed < round.target) {
+        finishRound("early", difference, elapsed);
+      } else {
+        finishRound("late", difference, elapsed);
+      }
+    }
+
+    function finishRound(type, difference, clickTime) {
+      const round = rounds[state.currentRound];
+      clearRoundTimers();
+      state.phase = "finished";
+
+      [thief, fake1, fake2].forEach(char => char.classList.remove("show", "move", "dash"));
+
+      let icon = "🍦";
+      let title = "Round Finished";
+      let message = "";
+      let subMessage = "";
+
+      if (type === "perfect") {
+        icon = "🏆";
+        title = "Perfect Catch!";
+        message = `Chef ${state.username} caught the thief at ${clickTime.toFixed(2)}s!`;
+        subMessage = `Selisih kamu cuma ${difference.toFixed(2)}s dari target ${round.target.toFixed(2)}s. Badge unlocked: ${round.badge}.`;
+        const score = {
+          name: state.username,
+          round: round.title,
+          roundIndex: state.currentRound + 1,
+          time: clickTime,
+          target: round.target,
+          diff: difference,
+          created_at: new Date().toISOString()
+        };
+        state.scores.push(score);
+        submitScoreToSupabase(score);
+        addFeed(`Chef ${state.username}: Perfect Catch at ${clickTime.toFixed(2)}s!`);
+      }
+
+      if (type === "early") {
+        icon = "😵";
+        title = "Too Early!";
+        message = `Kamu klik di ${clickTime.toFixed(2)}s. Malingnya belum lengah!`;
+        subMessage = `Targetnya ${round.target.toFixed(2)}s. Bedanya ${difference.toFixed(2)}s. Tunggu momen yang lebih pas ya.`;
+        addFeed(`Chef ${state.username} clicked too early at ${clickTime.toFixed(2)}s.`);
+      }
+
+      if (type === "late") {
+        icon = "💨";
+        title = "Too Late!";
+        message = `Kamu klik di ${clickTime.toFixed(2)}s. Malingnya sudah kabur!`;
+        subMessage = `Targetnya ${round.target.toFixed(2)}s. Bedanya ${difference.toFixed(2)}s.`;
+        addFeed(`Chef ${state.username} clicked too late at ${clickTime.toFixed(2)}s.`);
+      }
+
+      if (type === "fake") {
+        icon = "🫠";
+        title = "Wrong Catch!";
+        message = "Eyy, itu bukan malingnya!";
+        subMessage = "Kamu malah menangkap staff yang lagi panik bawa topping. Hati-hati di ronde berikutnya.";
+        addFeed(`Chef ${state.username} caught the wrong character.`);
+      }
+
+      if (type === "missed") {
+        icon = "🍨";
+        title = "The Thief Escaped!";
+        message = "Kamu nggak klik sampai waktunya habis.";
+        subMessage = `Malingnya kabur dari toko. Target tadi ada di ${round.target.toFixed(2)}s.`;
+        addFeed(`The thief escaped in ${round.title}.`);
+      }
+
+      const meme = getMemeText(type);
+      state.lastResult = {
+        type,
+        icon,
+        title,
+        message,
+        subMessage,
+        meme,
+        roundTitle: round.title,
+        target: round.target,
+        tolerance: round.tolerance,
+        clickTime,
+        difference
+      };
+
+      resultIcon.textContent = icon;
+      resultTitle.textContent = title;
+      resultMessage.textContent = message;
+      resultSubMessage.textContent = subMessage;
+      updateResultPreview(state.lastResult);
+
+      updateLeaderboard();
+
+      state.currentRound++;
+      if (state.currentRound >= rounds.length) {
+        nextRoundBtn.textContent = "See Final";
+      } else {
+        nextRoundBtn.textContent = "Next Mission";
+      }
+
+      saveState();
+
+      setTimeout(() => {
+        showScreen("result");
+      }, 450);
+    }
+
+    function nextMission() {
+      if (state.currentRound >= rounds.length) {
+        resultTitle.textContent = "Scoop Heist Completed!";
+        resultIcon.textContent = "🍦✨";
+        resultMessage.textContent = "The shop is safe for tonight!";
+        resultSubMessage.textContent = "Semua shift penjagaan sudah selesai. Certified Scoop Defender unlocked!";
+        nextRoundBtn.classList.add("hidden");
+        saveState();
+        return;
+      }
+
+      nextRoundBtn.classList.remove("hidden");
+      updateRoundBadges();
+      refreshSupabasePanels();
+      saveState();
+      showScreen("lobby");
+    }
+
+    function updateRoundBadges() {
+      rounds.forEach((round, index) => {
+        const badge = document.getElementById(`roundBadge${index + 1}`);
+        if (!badge) return;
+
+        if (index < state.currentRound) {
+          badge.textContent = "Finished";
+          badge.className = "badge done";
+        } else if (index === state.currentRound) {
+          badge.textContent = "Locked";
+          badge.className = "badge locked";
+        } else {
+          badge.textContent = "Locked";
+          badge.className = "badge locked";
+        }
+      });
+
+      roundGateTitle.textContent = rounds[state.currentRound]?.title || "All Missions Completed";
+    }
+
+    async function updateLeaderboard() {
+      leaderboard.innerHTML = "";
+
+      const remoteEntries = await fetchLeaderboard();
+      const sourceEntries = Array.isArray(remoteEntries) && remoteEntries.length ? remoteEntries : state.scores;
+      const entries = [...sourceEntries]
+        .sort((a, b) => (a.diff - b.diff) || (a.time - b.time))
+        .slice(0, 10);
+
+      if (!entries.length) {
+        leaderboard.innerHTML = `<p class="muted">Belum ada perfect catch.</p>`;
+        return;
+      }
+
+      entries.forEach((entry, index) => {
+        const row = document.createElement("div");
+        row.className = "rank";
+        row.innerHTML = `
+          <span>${index + 1}. Chef ${escapeHtml(entry.name)}<small>${escapeHtml(entry.round || "Round")} • ${Number(entry.time).toFixed(2)}s</small></span>
+          <span>±${Number(entry.diff).toFixed(2)}s</span>
+        `;
+        leaderboard.appendChild(row);
+      });
+    }
+
+    function addFeed(message) {
+      const li = document.createElement("li");
+      li.textContent = message;
+      liveFeed.prepend(li);
+
+      while (liveFeed.children.length > 8) {
+        liveFeed.removeChild(liveFeed.lastChild);
+      }
+    }
+
+    function getCharacterPositions() {
+      return [
+        { left: "24%", top: "51%" },
+        { left: "39%", top: "46%" },
+        { left: "61%", top: "49%" },
+        { left: "77%", top: "63%" },
+        { left: "44%", top: "70%" },
+        { left: "22%", top: "72%" },
+        { left: "58%", top: "65%" },
+        { left: "72%", top: "43%" }
+      ];
+    }
+
+    function randomizeCharacter(char, usedIndexes = new Set()) {
+      const positions = getCharacterPositions();
+      let index = Math.floor(Math.random() * positions.length);
+      let guard = 0;
+
+      while ((usedIndexes.has(index) || char.dataset.lastIndex === String(index)) && guard < 20) {
+        index = Math.floor(Math.random() * positions.length);
+        guard++;
+      }
+
+      usedIndexes.add(index);
+      char.dataset.lastIndex = String(index);
+
+      const pos = positions[index];
+      char.classList.add("dash");
+      char.style.left = pos.left;
+      char.style.top = pos.top;
+
+      setTimeout(() => {
+        char.classList.remove("dash");
+      }, 180);
+    }
+
+    function moveVisibleCharacters() {
+      if (state.phase !== "active") return;
+
+      const used = new Set();
+      [thief, fake1, fake2].forEach(char => {
+        if (char.classList.contains("show")) {
+          randomizeCharacter(char, used);
+        }
+      });
+    }
+
+    function startCharacterMovement(round) {
+      if (!round.move) return;
+
+      if (state.moveIntervalId) {
+        clearInterval(state.moveIntervalId);
+        state.moveIntervalId = null;
+      }
+
+      state.moveIntervalId = setInterval(() => {
+        moveVisibleCharacters();
+      }, round.moveEvery || 900);
+    }
+
+    function clearRoundTimers() {
+      if (state.rafId) {
+        cancelAnimationFrame(state.rafId);
+        state.rafId = null;
+      }
+
+      if (state.timeoutId) {
+        clearTimeout(state.timeoutId);
+        state.timeoutId = null;
+      }
+
+      if (state.moveIntervalId) {
+        clearInterval(state.moveIntervalId);
+        state.moveIntervalId = null;
+      }
+    }
+
+    checkPhoneBtn.addEventListener("click", startChatStory);
+
+    photoBox.addEventListener("click", () => photoInput.click());
+
+    photoInput.addEventListener("change", event => {
+      handlePhotoUpload(event.target.files[0]);
+    });
+
+    sendProfileBtn.addEventListener("click", () => submitProfile(true));
+    skipPhotoBtn.addEventListener("click", () => submitProfile(false));
+
+    usernameInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") submitProfile(true);
+    });
+
+    unlockBtn.addEventListener("click", unlockRound);
+
+    codeInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") unlockRound();
+    });
+
+    [thief, fake1, fake2].forEach(char => {
+      char.addEventListener("click", handleCharacterClick);
+    });
+
+    shopArea.addEventListener("click", () => {
+      if (state.phase === "active") {
+        showToast("Klik malingnya, Chef! Jangan klik area kosong.");
+      }
+    });
+
+    backLobbyBtn.addEventListener("click", () => {
+      clearRoundTimers();
+      state.phase = "lobby";
+      [thief, fake1, fake2].forEach(char => char.classList.remove("show", "move", "dash"));
+      showScreen("lobby");
+    });
+
+    nextRoundBtn.addEventListener("click", nextMission);
+    downloadProfileBtn.addEventListener("click", downloadProfileCard);
+    enterLobbyFromProfileBtn.addEventListener("click", closeProfileModalToLobby);
+    downloadResultBtn.addEventListener("click", downloadResultCard);
+
+    resetIntroBtn.addEventListener("click", resetSave);
+
+    startSupabaseHeartbeat();
+
+    window.addEventListener("beforeunload", () => {
+      saveState();
+      upsertOnlinePlayer();
+    });
+
+    if (!loadState()) {
+      showScreen("opening");
+    }
+  </script>
+</body>
+</html>
