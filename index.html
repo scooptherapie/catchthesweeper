@@ -1777,7 +1777,7 @@
           <div class="id-meta">
             Access: Sprinkle Security Room<br>
             Status: Ready to guard the shop<br>
-            Code: SCOOP-ID-001
+            Code: <span id="playerUniqueCode">SCOOP-ID</span>
           </div>
         </div>
 
@@ -1854,6 +1854,7 @@
     const profileModal = document.getElementById("profileModal");
     const idPhotoLarge = document.getElementById("idPhotoLarge");
     const idName = document.getElementById("idName");
+    const playerUniqueCode = document.getElementById("playerUniqueCode");
     const downloadProfileBtn = document.getElementById("downloadProfileBtn");
     const enterLobbyFromProfileBtn = document.getElementById("enterLobbyFromProfileBtn");
     const downloadCanvas = document.getElementById("downloadCanvas");
@@ -2012,6 +2013,14 @@
         localStorage.setItem(PLAYER_ID_KEY, id);
       }
       return id;
+    }
+
+    function getPlayerCode() {
+      const rawId = String(state?.playerId || getPlayerId());
+      const cleanId = rawId.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+      const shortId = cleanId.slice(-8).padStart(8, "0");
+
+      return `SCOOP-ID-${shortId}`;
     }
 
     async function supabaseRequest(path, options = {}) {
@@ -2249,6 +2258,8 @@
 
       if (profileMini) profileMini.innerHTML = profileHtml;
       gameProfileMini.innerHTML = profileHtml;
+
+      if (playerUniqueCode) playerUniqueCode.textContent = getPlayerCode();
     }
 
     function startChatStory() {
@@ -2530,7 +2541,7 @@
       ctx.font = "700 30px Fredoka, sans-serif";
       ctx.fillText("Access: Sprinkle Security Room", w / 2, 1008);
       ctx.fillText("Status: Ready to guard the shop", w / 2, 1060);
-      ctx.fillText("Code: SCOOP-ID-001", w / 2, 1112);
+      ctx.fillText(`Code: ${getPlayerCode()}`, w / 2, 1112);
 
       ctx.fillStyle = "#ea5d8f";
       ctx.font = "700 30px Fredoka, sans-serif";
