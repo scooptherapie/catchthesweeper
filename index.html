@@ -1331,6 +1331,37 @@
 
 
 
+
+    .online-toggle {
+      border: 2px solid rgba(255,255,255,.8);
+      font-family: "Fredoka", sans-serif;
+    }
+
+    .online-toggle:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(185, 74, 118, .13);
+    }
+
+    .online-dropdown {
+      width: min(430px, 94vw);
+      margin: -4px auto 16px;
+      padding: 12px 14px 14px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.70);
+      border: 3px solid rgba(255,255,255,.85);
+      box-shadow: 0 12px 26px rgba(185, 74, 118, .14);
+      animation: popIn .22s ease both;
+      text-align: center;
+    }
+
+    .online-dropdown-title {
+      margin-bottom: 9px;
+      color: var(--rose);
+      font-family: "Chewy", cursive;
+      font-size: 21px;
+      line-height: 1;
+    }
+
     .online-list {
       margin-top: 10px;
       display: flex;
@@ -1565,13 +1596,15 @@
       <div class="card">
         <div class="topbar">
           <div class="pill"><span class="phone-dot"></span> Live Event Lobby</div>
-          <div class="pill profile-pill">
-            <span id="profileMini" class="profile-mini">👩‍🍳</span>
-            <span>Chef: <span id="chefNameText">-</span></span>
-          </div>
-          <div class="pill">🍦 <span id="onlineCount">0</span> chefs online</div>
+          <button id="onlineToggleBtn" class="pill online-toggle" type="button" aria-expanded="false">
+            🍦 <span id="onlineCount">0</span> chefs online
+          </button>
         </div>
-        <div id="onlineList" class="online-list"></div>
+
+        <div id="onlineDropdown" class="online-dropdown hidden">
+          <div class="online-dropdown-title">Chefs currently online</div>
+          <div id="onlineList" class="online-list"></div>
+        </div>
 
         <div class="hero">
           <h2>Mission Code Required</h2>
@@ -1802,6 +1835,8 @@
     const liveFeed = document.getElementById("liveFeed");
     const leaderboard = document.getElementById("leaderboard");
     const onlineCount = document.getElementById("onlineCount");
+    const onlineToggleBtn = document.getElementById("onlineToggleBtn");
+    const onlineDropdown = document.getElementById("onlineDropdown");
     const onlineList = document.getElementById("onlineList");
     const backLobbyBtn = document.getElementById("backLobbyBtn");
 
@@ -2205,14 +2240,14 @@
     }
 
     function applyProfile() {
-      chefNameText.textContent = state.username || "-";
+      if (chefNameText) chefNameText.textContent = state.username || "-";
       gameChefName.textContent = state.username ? `Chef ${state.username}` : "Chef";
 
       const profileHtml = state.photo
         ? `<img src="${state.photo}" alt="Profile photo">`
         : "👩‍🍳";
 
-      profileMini.innerHTML = profileHtml;
+      if (profileMini) profileMini.innerHTML = profileHtml;
       gameProfileMini.innerHTML = profileHtml;
     }
 
@@ -3213,6 +3248,27 @@
         state.moveIntervalId = null;
       }
     }
+
+
+    if (onlineToggleBtn && onlineDropdown) {
+      onlineToggleBtn.addEventListener("click", () => {
+        const isHidden = onlineDropdown.classList.toggle("hidden");
+        onlineToggleBtn.setAttribute("aria-expanded", String(!isHidden));
+      });
+    }
+
+    document.addEventListener("click", event => {
+      if (!onlineToggleBtn || !onlineDropdown) return;
+      if (onlineDropdown.classList.contains("hidden")) return;
+
+      const clickedToggle = onlineToggleBtn.contains(event.target);
+      const clickedDropdown = onlineDropdown.contains(event.target);
+
+      if (!clickedToggle && !clickedDropdown) {
+        onlineDropdown.classList.add("hidden");
+        onlineToggleBtn.setAttribute("aria-expanded", "false");
+      }
+    });
 
     checkPhoneBtn.addEventListener("click", startChatStory);
 
