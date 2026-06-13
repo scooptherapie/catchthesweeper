@@ -1053,9 +1053,72 @@
     }
 
     .result-icon {
+      width: min(330px, 82vw);
+      aspect-ratio: 1 / 1;
+      margin: 12px auto 18px;
+      border-radius: 30px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background: rgba(255,255,255,.72);
+      border: 4px solid rgba(255,255,255,.88);
+      box-shadow: 0 14px 30px rgba(185, 74, 118, .18);
       font-size: 74px;
-      margin: 12px 0;
-      animation: bounce 1.2s ease infinite;
+    }
+
+    .result-photo {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .result-card-preview {
+      width: min(430px, 94vw);
+      margin: 10px auto;
+      padding: 14px 16px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.66);
+      border: 3px solid rgba(255,255,255,.82);
+      box-shadow: 0 12px 24px rgba(185, 74, 118, .12);
+      text-align: center;
+    }
+
+    .result-name {
+      color: var(--rose);
+      font-family: "Chewy", cursive;
+      font-size: 25px;
+      line-height: 1.05;
+      overflow-wrap: anywhere;
+    }
+
+    .result-role {
+      margin-top: 5px;
+      font-weight: 900;
+      color: var(--blue-dark);
+    }
+
+    .result-meta {
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.45;
+      font-weight: 750;
+      color: rgba(121,75,56,.78);
+    }
+
+    .meme-box {
+      width: min(520px, 94vw);
+      margin: 14px auto 0;
+      padding: 13px 15px;
+      border-radius: 22px;
+      background: rgba(255,252,229,.72);
+      border: 3px dashed rgba(234,93,143,.38);
+      color: var(--brown);
+      font-family: "Kalam", cursive;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.35;
     }
 
     @keyframes bounce {
@@ -1821,6 +1884,15 @@
       ruby: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/f6bdd1e52dd2b2fd241f3721cfb12f4d914534fe/ruby%20avatar.jpg"
     };
 
+    const resultImages = {
+      perfect: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/3555bded7e5cb3e5ac2d851e7d9bbe61758a3c77/perfect.jpg",
+      early: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/3555bded7e5cb3e5ac2d851e7d9bbe61758a3c77/early.jpg",
+      late: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/3555bded7e5cb3e5ac2d851e7d9bbe61758a3c77/late.jpg",
+      fake: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/3555bded7e5cb3e5ac2d851e7d9bbe61758a3c77/fake.jpg",
+      missed: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/3555bded7e5cb3e5ac2d851e7d9bbe61758a3c77/missed.jpg",
+      completed: "https://raw.githubusercontent.com/scooptherapie/catchthesweeper/3555bded7e5cb3e5ac2d851e7d9bbe61758a3c77/perfect.jpg"
+    };
+
     const chatScript = [
       { sender: "Caramel", avatar: staffAvatars.caramel, text: "Guys... staff room darurat. Ada yang masuk dapur lagi semalam." },
       { sender: "Ruby", avatar: staffAvatars.ruby, text: "Aku cek freezer pagi ini, toples sprinkle emasnya geser sendiri. Padahal toko sudah dikunci." },
@@ -2369,43 +2441,76 @@
         return;
       }
 
-      const { canvas, ctx, w } = await drawBaseCard("🍦 SCOOP HEIST RESULT", result.roundTitle || "Live Mission");
-      const isWin = result.type === "perfect";
-      const icon = isWin ? "🏆" : result.type === "fake" ? "🫠" : result.type === "early" ? "😵" : result.type === "late" ? "💨" : "🍨";
+      const { canvas, ctx, w, h } = await drawBaseCard("SCOOP HEIST RESULT", result.roundTitle || "Live Mission");
+      const resultImg = await loadCanvasImage(result.image || result.icon || resultImages[result.type] || resultImages.missed);
 
-      ctx.font = "150px serif";
-      ctx.textAlign = "center";
-      ctx.fillText(icon, w / 2, 430);
-
-      ctx.fillStyle = isWin ? "#5babe0" : "#ea5d8f";
-      ctx.font = "78px Boogaloo, Fredoka, sans-serif";
-      ctx.fillText(result.title || "Round Result", w / 2, 555);
-
-      ctx.fillStyle = "#9f6b4d";
-      ctx.font = "700 44px Fredoka, sans-serif";
-      ctx.fillText(`Chef ${state.username || "Scooper"}`, w / 2, 650);
-
-      ctx.fillStyle = "rgba(255,255,255,.72)";
-      roundedRect(ctx, 120, 715, w - 240, 250, 54);
+      ctx.fillStyle = "rgba(255,255,255,.84)";
+      roundedRect(ctx, 190, 265, 700, 700, 70);
       ctx.fill();
+
+      if (resultImg) {
+        ctx.save();
+        roundedRect(ctx, 215, 290, 650, 650, 58);
+        ctx.clip();
+        drawCoverImage(ctx, resultImg, 215, 290, 650, 650);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = "#ea5d8f";
+        ctx.font = "150px serif";
+        ctx.textAlign = "center";
+        ctx.fillText("🍦", w / 2, 650);
+      }
+
+      ctx.fillStyle = result.type === "perfect" ? "#5babe0" : "#ea5d8f";
+      ctx.font = "78px Boogaloo, Fredoka, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(result.title || "Round Result", w / 2, 1060);
 
       ctx.fillStyle = "#9f6b4d";
       ctx.font = "700 34px Fredoka, sans-serif";
-      wrapCanvasText(ctx, result.message || "Mission completed.", w / 2, 790, 760, 44, 3);
+      ctx.fillText(`Chef ${state.username || "Scooper"}`, w / 2, 1110);
 
-      ctx.font = "700 28px Fredoka, sans-serif";
+      ctx.font = "700 25px Fredoka, sans-serif";
       const meta = result.type === "perfect"
         ? `Target ${result.target.toFixed(2)}s • Click ${result.clickTime.toFixed(2)}s • Diff ${result.difference.toFixed(2)}s`
         : result.type === "missed"
           ? `Target ${result.target.toFixed(2)}s • The thief escaped`
           : `Target ${result.target.toFixed(2)}s • Click ${result.clickTime.toFixed(2)}s`;
-      ctx.fillText(meta, w / 2, 1045);
+      ctx.fillText(meta, w / 2, 1150);
+
+      ctx.fillStyle = "rgba(255,252,229,.86)";
+      roundedRect(ctx, 120, 1188, w - 240, 96, 34);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(234,93,143,.30)";
+      ctx.lineWidth = 5;
+      roundedRect(ctx, 120, 1188, w - 240, 96, 34);
+      ctx.stroke();
 
       ctx.fillStyle = "#ea5d8f";
-      ctx.font = "700 34px Kalam, Fredoka, sans-serif";
-      wrapCanvasText(ctx, result.meme || "Scoop happens. Try again next mission!", w / 2, 1130, 820, 45, 3);
+      ctx.font = "700 30px Kalam, Fredoka, sans-serif";
+      wrapCanvasText(ctx, result.meme || "Scoop happens. Try again next mission!", w / 2, 1245, 800, 36, 2);
 
       triggerCanvasDownload(canvas, `scoop-heist-result-${safeFileName(state.username)}.png`);
+    }
+
+    function loadCanvasImage(src) {
+      return new Promise(resolve => {
+        if (!src) return resolve(null);
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null);
+        img.src = src;
+      });
+    }
+
+    function drawCoverImage(ctx, img, x, y, width, height) {
+      const ratio = Math.max(width / img.width, height / img.height);
+      const drawWidth = img.width * ratio;
+      const drawHeight = img.height * ratio;
+      const drawX = x + (width - drawWidth) / 2;
+      const drawY = y + (height - drawHeight) / 2;
+      ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
     }
 
     function triggerCanvasDownload(canvas, filename) {
@@ -2621,13 +2726,13 @@
 
       [thief, fake1, fake2].forEach(char => char.classList.remove("show", "move", "dash"));
 
-      let icon = "🍦";
+      let icon = resultImages.missed;
       let title = "Round Finished";
       let message = "";
       let subMessage = "";
 
       if (type === "perfect") {
-        icon = "🏆";
+        icon = resultImages.perfect;
         title = "Perfect Catch!";
         message = `Chef ${state.username} caught the thief at ${clickTime.toFixed(2)}s!`;
         subMessage = `Selisih kamu cuma ${difference.toFixed(2)}s dari target ${round.target.toFixed(2)}s. Badge unlocked: ${round.badge}.`;
@@ -2646,7 +2751,7 @@
       }
 
       if (type === "early") {
-        icon = "😵";
+        icon = resultImages.early;
         title = "Too Early!";
         message = `Kamu klik di ${clickTime.toFixed(2)}s. Malingnya belum lengah!`;
         subMessage = `Targetnya ${round.target.toFixed(2)}s. Bedanya ${difference.toFixed(2)}s. Tunggu momen yang lebih pas ya.`;
@@ -2654,7 +2759,7 @@
       }
 
       if (type === "late") {
-        icon = "💨";
+        icon = resultImages.late;
         title = "Too Late!";
         message = `Kamu klik di ${clickTime.toFixed(2)}s. Malingnya sudah kabur!`;
         subMessage = `Targetnya ${round.target.toFixed(2)}s. Bedanya ${difference.toFixed(2)}s.`;
@@ -2662,7 +2767,7 @@
       }
 
       if (type === "fake") {
-        icon = "🫠";
+        icon = resultImages.fake;
         title = "Wrong Catch!";
         message = "Eyy, itu bukan malingnya!";
         subMessage = "Kamu malah menangkap staff yang lagi panik bawa topping. Hati-hati di ronde berikutnya.";
@@ -2670,7 +2775,7 @@
       }
 
       if (type === "missed") {
-        icon = "🍨";
+        icon = resultImages.missed;
         title = "The Thief Escaped!";
         message = "Kamu nggak klik sampai waktunya habis.";
         subMessage = `Malingnya kabur dari toko. Target tadi ada di ${round.target.toFixed(2)}s.`;
@@ -2681,6 +2786,7 @@
       state.lastResult = {
         type,
         icon,
+        image: icon,
         title,
         message,
         subMessage,
@@ -2692,7 +2798,7 @@
         difference
       };
 
-      resultIcon.textContent = icon;
+      resultIcon.innerHTML = `<img src="${icon}" alt="${escapeHtml(title)}" class="result-photo">`;
       resultTitle.textContent = title;
       resultMessage.textContent = message;
       resultSubMessage.textContent = subMessage;
@@ -2717,7 +2823,7 @@
     function nextMission() {
       if (state.currentRound >= rounds.length) {
         resultTitle.textContent = "Scoop Heist Completed!";
-        resultIcon.textContent = "🍦✨";
+        resultIcon.innerHTML = `<img src="${resultImages.completed}" alt="Scoop Heist Completed" class="result-photo">`;
         resultMessage.textContent = "The shop is safe for tonight!";
         resultSubMessage.textContent = "Semua shift penjagaan sudah selesai. Certified Scoop Defender unlocked!";
         nextRoundBtn.classList.add("hidden");
